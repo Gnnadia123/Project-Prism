@@ -1,0 +1,200 @@
+{
+    "standard":{
+        "code": "standard",
+        "name": "Standard",
+        "rarity": 4,
+        "desc": "a standard prism",
+        "hex": "#b9b9b9",
+        "element": "none",
+        "cutscene": null
+    },
+    "uncommon": {
+        "code": "uncommon",
+        "name": "Uncommon",
+        "rarity": 8,
+        "desc": "an uncommon prism",
+        "hex": "#22803b",
+        "element": "none",
+        "cutscene": null
+    },
+    "rare": {
+        "code": "rare",
+        "name": "Rare",
+        "rarity": 16,
+        "desc": "a rare prism",
+        "hex": "#4e2b87",
+        "element": "none",
+        "cutscene": null
+    },
+    "waterbase": {
+        "code": "waterbase",
+        "name": "Water (Base)",
+        "rarity": 64,
+        "desc": "The prism harnessing a weak power of water.",
+        "hex": "#101ee0",
+        "element": "water",
+        "cutscene": null
+    },
+    "firebase": {
+        "code": "firebase",
+        "name": "Fire (Base)",
+        "rarity": 64,
+        "desc": "The prism harnessing a weak power of fire.",
+        "hex": "#ff5400",
+        "element": "fire",
+        "cutscene": null
+    },
+    "earthbase": {
+        "code": "earthbase",
+        "name": "Earth (Base)",
+        "rarity": 64,
+        "desc": "The prism harnessing a weak power of earth.",
+        "hex": "#581908",
+        "element": "earth",
+        "cutscene": null
+    },
+    "frostbase": {
+        "code": "frostbase",
+        "name": "Frost (Base)",
+        "rarity": 128,
+        "desc": "The prism harnessing a weak power of ice and frost.",
+        "hex": "#c7eae4",
+        "element": "ice",
+        "cutscene": null
+    },
+    "lightningbase": {
+        "code": "lightningbase",
+        "name": "Lightning (Base)",
+        "rarity": 128,
+        "desc":"The prism harnessing a weak power of electricity and lightning.",
+        "hex": "#fdca40",
+        "element": "electricity",
+        "cutscene": null
+    },
+    "darkbase": {
+        "code": "darkbase",
+        "name": "Base Of Darkness",
+        "rarity": 250,
+        "desc":"A prism containing relics of the ancient Darkness spirits.",
+        "hex": "#403645",
+        "element": "darkness",
+        "cutscene": null
+    },
+    "lightbase": {
+        "code": "lightbase",
+        "name": "Base of Light",
+        "rarity": 250,
+        "desc": "A prism containing relics of the ancient Light spirits.",
+        "hex": "#f2efba",
+        "element": "light",
+        "cutscene": null
+    },
+    "forbidden": {
+        "code": "forbidden",
+        "name": "Forbidden",
+        "rarity": 404,
+        "desc": "A glitched element which created a small tear in the fabric of reality.",
+        "hex": "#0356c9",
+        "element": "none",
+        "cutscene": null
+    },
+    "formula": {
+        "code": "formula",
+        "name": "Formula",
+        "rarity": 500,
+        "desc": "This relic seems to contain ancient, undecipherable knowledge.",
+        "hex": "#f7f7ff",
+        "element": "none",
+        "cutscene": null
+    },
+    "clover": {
+        "code": "clover",
+        "name": "Clove",
+        "rarity": 777,
+        "desc": "Legend says this crystal is the embodiment of luck.",
+        "hex": "#08a045",
+        "element": "none",
+        "cutscene": null
+    },
+    "thunder": {
+        "code": "thunder",
+        "name": "Thunder",
+        "rarity": 1100,
+        "desc": "It is said to be the embodiment of atmospheric thunderstorm forces.",
+        "hex": "#f6ae2d",
+        "element": "lightning",
+        "cutscene": "basic"
+    },
+    "blizzard": {
+        "code": "blizzard",
+        "name": "Blizzard",
+        "rarity": 1100,
+        "desc": "It is said to be the embodiment of strong, cold blizzzard forces.",
+        "hex": "#005e84",
+        "element": "ice",
+        "cutscene": "basic"
+    },
+    "youth": {
+        "code": "youth",
+        "name": "Youth",
+        "rarity": 1500,
+        "desc": "The encapsulation of the essence of youth and vitality.",
+        "hex": "#95f2d9",
+        "element": "none",
+        "cutscene": "basic" 
+    },
+    "water1": {
+        "code": "water1",
+        "name": "Water I",
+        "rarity": 2000,
+        "desc": "A crystal infused with the power of the water element.",
+        "hex": "#101ee0",
+        "element": "water",
+        "cutscene": "basic"
+    },
+    "fire1": {
+        "code": "fire1",
+        "name": "Fire I",
+        "rarity": 2000,
+        "desc": "A crystal infused with the power of the fire element.",
+        "hex": "#ff5400",
+        "element": "fire",
+        "cutscene": "basic"
+    },
+    "earth1": {
+        "code": "earth1",
+        "name": "Earth I",
+        "rarity": 2000,
+        "desc": "A crystal infused with the power of the earth element.",
+        "hex": "#581908",
+        "element": "earth",
+        "cutscene": "basic"
+    },
+    "math": {
+        "code": "math",
+        "name": "Math",
+        "rarity": 2048,
+        "desc": "The building blocks of modern concepts of engineering.",
+        "hex": "#f79f79",
+        "element": "none",
+        "cutscene": "basic"
+    },
+    "willpower": {
+        "code": "willpower",
+        "name": "Willpower",
+        "rarity": 2500,
+        "desc": "The strength and spirits of will and determination.",
+        "hex": "#dfe2e0",
+        "element": "none",
+        "cutscene": "basic"
+    },
+    "bleed": {
+        "code": "bleed",
+        "name": "Bleed", 
+        "rarity": 3333,
+        "desc": "Watch as the blood drips slowly...",
+        "hex": "#610018",
+        "element": "none",
+        "cutscene": "basic"
+    }
+}

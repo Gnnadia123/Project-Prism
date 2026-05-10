@@ -1,0 +1,18 @@
+{
+    "mon-essence1": {
+        "code": "mon-essence1",
+        "name": "Monster Essence (I)",
+        "rank": "E",
+        "rarity": "Common",
+        "desc": "The essence of a monster, containing its basic attributes.",
+        "price": 10
+    },
+    "life-essence1": {
+        "code": "life-essence1",
+        "name": "Life Essence (I)",
+        "rank": "E",
+        "rarity": "Common",
+        "desc": "The essence of life, containing basic vitality.",
+        "price": 12
+    }
+}

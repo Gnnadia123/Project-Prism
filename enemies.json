@@ -1,0 +1,15 @@
+{
+    "Red Orc": {
+        "difficulty": 1,
+        "health": 100,
+        "attack": {
+            "Punch": 15,
+            "Kick": 20
+        },
+        "speed": 10,
+        "drops": [
+            "mon-essence1", "life-essence1", "talon"
+        ],
+        "rate": 64
+    }
+}
