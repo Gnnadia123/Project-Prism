@@ -89,33 +89,6 @@
         "element": "light",
         "cutscene": null
     },
-    "forbidden": {
-        "code": "forbidden",
-        "name": "Forbidden",
-        "rarity": 404,
-        "desc": "A glitched element which created a small tear in the fabric of reality.",
-        "hex": "#0356c9",
-        "element": "none",
-        "cutscene": null
-    },
-    "formula": {
-        "code": "formula",
-        "name": "Formula",
-        "rarity": 500,
-        "desc": "This relic seems to contain ancient, undecipherable knowledge.",
-        "hex": "#f7f7ff",
-        "element": "none",
-        "cutscene": null
-    },
-    "clover": {
-        "code": "clover",
-        "name": "Clove",
-        "rarity": 777,
-        "desc": "Legend says this crystal is the embodiment of luck.",
-        "hex": "#08a045",
-        "element": "none",
-        "cutscene": null
-    },
     "thunder": {
         "code": "thunder",
         "name": "Thunder",
@@ -133,15 +106,6 @@
         "hex": "#005e84",
         "element": "ice",
         "cutscene": "basic"
-    },
-    "youth": {
-        "code": "youth",
-        "name": "Youth",
-        "rarity": 1500,
-        "desc": "The encapsulation of the essence of youth and vitality.",
-        "hex": "#95f2d9",
-        "element": "none",
-        "cutscene": "basic" 
     },
     "water1": {
         "code": "water1",
@@ -168,24 +132,6 @@
         "desc": "A crystal infused with the power of the earth element.",
         "hex": "#581908",
         "element": "earth",
-        "cutscene": "basic"
-    },
-    "math": {
-        "code": "math",
-        "name": "Math",
-        "rarity": 2048,
-        "desc": "The building blocks of modern concepts of engineering.",
-        "hex": "#f79f79",
-        "element": "none",
-        "cutscene": "basic"
-    },
-    "willpower": {
-        "code": "willpower",
-        "name": "Willpower",
-        "rarity": 2500,
-        "desc": "The strength and spirits of will and determination.",
-        "hex": "#dfe2e0",
-        "element": "none",
         "cutscene": "basic"
     },
     "bleed": {

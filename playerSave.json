@@ -8,8 +8,8 @@
     },
     "shardinv": {
         "uncommon": 174,
-        "standard": 357,
-        "rare": 44,
+        "standard": 360,
+        "rare": 45,
         "waterbase": 14,
         "darkbase": 3,
         "earthbase": 17,
@@ -17,10 +17,8 @@
         "lightningbase": 7,
         "frostbase": 6,
         "lightbase": 4,
-        "pixel": 1,
         "thunder": 1,
         "blizzard": 1,
-        "math": 1,
         "earth1": 0
     },
     "gear": {}
