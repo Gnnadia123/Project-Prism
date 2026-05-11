@@ -1,6 +1,9 @@
 from rich import print
 from rich.panel import Panel
-from rich.tree import Tree
+from rich.console import Console
+from rich.prompt import Prompt
+from rich.table import Table
+from rich.text import Text
 import json
 import curses
 import random
@@ -9,6 +12,17 @@ import time
 from datetime import datetime
 from cutscenes import basic_cutscene, epic_cutscene
 
+PREFIXES = {
+    "none": ["Iron", "Steel", "Sturdy", "Flawless", "Polished"],
+    "fire": ["Blazing", "Infernal", "Scorching", "Volcanic", "Ember"],
+    "water": ["Tidal", "Aqueous", "Oceanic", "Abyssal", "Torrential"],
+    "earth": ["Terra", "Seismic", "Crystalline", "Obsidian", "Tremor"],
+    "ice": ["Glacial", "Frostbite", "Sub-zero", "Cryo", "Frozen"],
+    "lightning": ["Voltaic", "Thundering", "Galvanic", "Storm", "Spark"],
+    "hell": ["Demonic", "Nether", "Diabolic", "Soul-rending", "Inferno"],
+    "darkness": ["Void", "Shadow", "Midnight", "Eclipse", "Abyssal"],
+    "light": ["Radiant", "Luminous", "Divine", "Celestial", "Holy"]
+}
 
 def clear():
     os.system("clear")
@@ -22,8 +36,6 @@ DEFAULT_SAVE = {
     "rebirth": 1,
     "talons": 100,
     "invcap": 80,
-    "prism": {
-    },
     "shardinv": {
     },
     "gear": {
@@ -156,61 +168,177 @@ def bounty_board():
         else:
             combat()
 
-def forge():
-    forg = []
+console = Console()
+
+# Example clear function as requested
+def clear():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
+# Prefix dictionary based on elements
+
+
+def forge(playerData: dict, RARITIES: dict):
+    clear()
+    console.print(Panel.fit("[bold yellow]Welcome to the Forge![/bold yellow]\nCombine at least 4 compatible prisms to create a weapon.", border_style="yellow"))
+    
+    # Create a temporary inventory so we can deduct prisms as the player adds them to the forge
+    temp_inv = {k: v for k, v in playerData.get("shardinv", {}).items()}
+    
+    selected_prisms = []
+    current_element = "none" # Defaults to none until an elemental prism is added
+    primary_hex = "#ffffff"  # Default color
+    
     while True:
-        print("[bold yellow] ⚔ Forge ⚔ [/]")
-        print()
-        print("Combine 4 or more shards to forge a weapon!")
-        print("Only shards with the same elemental type can be forged together. However, shards wothout any type are compatible with any type.")
-        for i in range(len(forg)+1):
-            if i < len(forg):
-                print(f"[{RARITIES[forg[i]]['hex']}] {i+1}. {RARITIES[forg[i]]['name']} [/]")
-            else:
-                print(f"{i+1}. [dim]Empty Slot[/]")
-        print(f"{len(forg)+2}. Forge")
-        choose = input("Press enter to go back or the number to view details and add, or Q to quit: ")
-        if choose.upper() == "Q":
-            break
-        if choose.isdigit() and 1 <= int(choose) <= 4:
-            while True:
+        # Display current forge status
+        table = Table(title="Currently in Forge", show_header=True, header_style="bold magenta")
+        table.add_column("Prism")
+        table.add_column("Element")
+        table.add_column("Power")
+        
+        total_power = 0
+        for p_code in selected_prisms:
+            p_data = RARITIES[p_code]
+            table.add_row(p_data["name"], p_data["element"].title(), str(p_data["power"]))
+            total_power += p_data["power"]
+            
+        console.print(table)
+        console.print(f"[cyan]Current Forge Element Lock:[/] {current_element.title()}")
+        console.print(f"[cyan]Total Power:[/] {total_power}")
+        console.print(f"[cyan]Prisms Added:[/] {len(selected_prisms)}/4 minimum\n")
+        
+        # Display available inventory
+        console.print("[bold green]Available Prisms in Inventory:[/bold green]")
+        available_found = False
+            
+        for p_code, amount in playerData.get("shardinv", {}).items():
+            if amount and int(amount) > 0 and p_code in RARITIES:
+                p_data = RARITIES[p_code]
+                color = p_data.get("hex", "#ffffff")
+                console.print(f"- [{color}]{p_code}[/] ({p_data['name']}): x{amount} | Element: {p_data['element']} | Power: {p_data['power']}")
+                available_found = True
+                
+        if not available_found:
+            console.print("[red]No more prisms available![/red]")
+            
+        # Get player input
+        console.print("\nType the [bold]code[/bold] of a prism to add it.")
+        choice = Prompt.ask("Or type [bold yellow]'done'[/bold yellow] to forge, or [bold red]'cancel'[/bold red] to exit").lower().strip()
+        
+        if choice == "cancel":
+            console.print("[red]Forging cancelled.[/red]")
+            return
+            
+        if choice == "done":
+            if len(selected_prisms) < 4:
                 clear()
-                print("Choose a shard to add:")
-                current_inv = get_sorted_inv()
-                for i, (item, count) in enumerate(current_inv, start=1):
-                    print(f"[{RARITIES[item]['hex']}] {i}. {RARITIES[item]['name']} ({count}) [/]")
-                c = input("Press enter to go back or the number to add: ")
-                if c.isdigit() and 1 <= int(c) <= len(current_inv):
-                    item, count = current_inv[int(c) - 1]
-                    if count > 0:
-                        forg.append(item)
-                        print(f"Added {RARITIES[item]['name']} to forge!")
-                        time.sleep(1)
-                        break
-                    else:
-                        print("You don't have any of that shard!")
-                        time.sleep(1)
-                else:
-                    break
-        elif choose == str(len(forg)+2):
-            if len(forg) < 4:
-                print("You need at least 4 shards to forge!")
-                time.sleep(1)
-                return
-            elements = set(RARITIES[item]['element'] for item in forg)
-            if len(elements) > 2 or (len(elements) == 2 and "none" not in elements):
-                print("Invalid combination of shards! All shards must share the same element or be non-elemental.")
-                time.sleep(1)
-                return
-            for item in forg:
-                playerData["shardinv"][item] -= 1
-            saveFile(playerData)
-            print("Forging weapon...")
-            time.sleep(2)
-            #MARK: forge logic
-            forg.clear()
-            print("Weapon forged! (not really, this is just a placeholder)")
-            time.sleep(2)
+                console.print(f"[bold red]Not enough prisms! You need at least 4. You currently have {len(selected_prisms)}.[/bold red]\n")
+                continue
+            else:
+                break
+                
+        # Validate chosen prism
+        if choice not in temp_inv or temp_inv[choice] <= 0:
+            clear()
+            console.print(f"[bold red]You don't have any '{choice}' in your inventory![/bold red]\n")
+            continue
+            
+        if choice not in RARITIES:
+            clear()
+            console.print(f"[bold red]Invalid prism code '{choice}'![/bold red]\n")
+            continue
+            
+        # Check compatibility
+        new_element = RARITIES[choice]["element"]
+        if current_element == "none":
+            # If forge is currently typeless, it takes on the new element (if the new one isn't typeless)
+            if new_element != "none":
+                current_element = new_element
+                primary_hex = RARITIES[choice].get("hex", "#ffffff")
+            is_compatible = True
+        elif new_element == "none" or new_element == current_element:
+            # Matches current element or is typeless
+            is_compatible = True
+        else:
+            is_compatible = False
+            
+        if not is_compatible:
+            clear()
+            console.print(f"[bold red]Incompatible Elements![/bold red] You cannot mix {new_element.title()} with {current_element.title()}.\n")
+            continue
+            
+        # Add to forge
+        selected_prisms.append(choice)
+        temp_inv[choice] -= 1
+        clear()
+        console.print(f"[green]Added {RARITIES[choice]['name']} to the forge![/green]\n")
+
+    # --- FORGING CUTSCENE ---
+    clear()
+    console.print("[bold orange3]The forge begins to roar...[/bold orange3]")
+    time.sleep(1.5)
+    console.print(f"[{primary_hex}]Sparks of {current_element} magic fly into the air...[/{primary_hex}]")
+    time.sleep(1.5)
+    console.print("[bold yellow]The heavy hammer strikes the anvil![/bold yellow]")
+    
+    # Fake progress loading
+    with console.status("[bold green]Forging weapon...", spinner="aesthetic"):
+        time.sleep(3)
+        
+    clear()
+    
+    # --- WEAPON CALCULATION ---
+    # Deduct permanently from actual playerSave now that forging is successful
+    for p_code in selected_prisms:
+        playerData["shardinv"][p_code] -= 1
+        # Cleanup empty entries
+        if playerData["shardinv"][p_code] <= 0:
+            del playerData["shardinv"][p_code]
+
+    # Calculate Type based on power
+    if total_power < 100:
+        wep_type = "Dagger"
+        damage = int(total_power * random.uniform(0.8, 1.2))
+    elif total_power < 250:
+        wep_type = "Shortsword"
+        damage = int(total_power * random.uniform(1.0, 1.4))
+    elif total_power < 500:
+        wep_type = "Longsword"
+        damage = int(total_power * random.uniform(1.2, 1.6))
+    elif total_power < 800:
+        wep_type = "Warhammer"
+        damage = int(total_power * random.uniform(1.5, 1.8))
+    else:
+        wep_type = "Greatsword"
+        damage = int(total_power * random.uniform(1.8, 2.2))
+
+    # Generate Name
+    prefix = random.choice(PREFIXES.get(current_element, PREFIXES["none"]))
+    weapon_name = f"{prefix} {wep_type}"
+    weapon_id = f"wep_{int(time.time())}_{random.randint(100,999)}"
+    
+    # Create weapon dictionary
+    new_weapon = {
+        "name": weapon_name,
+        "type": wep_type,
+        "element": current_element,
+        "power_rating": total_power,
+        "damage": damage,
+        "color": primary_hex
+    }
+    
+    # Save to player gear
+    playerData.setdefault("gear", {})[weapon_id] = new_weapon
+    
+    # Final display
+    weapon_text = Text()
+    weapon_text.append("Weapon Forged Successfully!\n\n", style="bold green")
+    weapon_text.append(f"Name: {weapon_name}\n", style=f"bold {primary_hex}")
+    weapon_text.append(f"Element: {current_element.title()}\n", style="italic")
+    weapon_text.append(f"Damage: {damage}\n", style="bold red")
+    weapon_text.append(f"Base Power: {total_power}", style="dim")
+    
+    console.print(Panel(weapon_text, border_style=primary_hex, expand=False))
+    Prompt.ask("\nPress [bold]Enter[/bold] to continue")
 
 def main():
     while True:
@@ -237,4 +365,4 @@ def main():
             time.sleep(1)
             clear()
 
-forge()
+main()
