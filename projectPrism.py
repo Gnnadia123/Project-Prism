@@ -347,7 +347,8 @@ def main():
         print("1. Roll")
         print("2. Inventory")
         print("3. Bounty Board")
-        print("4. Exit")
+        print("4. Forge")
+        print("5. Exit")
         choice = input("Choose an option: ")
         if choice == "1":
             roll()
@@ -357,6 +358,8 @@ def main():
             clear()
             bounty_board()
         elif choice == "4":
+            forge()
+        elif choice == "5":
             print("Goodbye!")
             saveFile(playerData)
             break
