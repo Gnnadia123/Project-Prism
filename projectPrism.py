@@ -38,9 +38,8 @@ DEFAULT_SAVE = {
     "invcap": 80,
     "shardinv": {
     },
+    "weapons": {},
     "gear": {
-    },
-    "items": {
 
     }
 }

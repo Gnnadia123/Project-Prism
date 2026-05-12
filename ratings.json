@@ -6,6 +6,7 @@
         "desc": "a standard prism",
         "hex": "#b9b9b9",
         "element": "none",
+        "power": 1,
         "cutscene": null
     },
     "uncommon": {
@@ -15,6 +16,7 @@
         "desc": "an uncommon prism",
         "hex": "#22803b",
         "element": "none",
+        "power": 2,
         "cutscene": null
     },
     "rare": {
@@ -24,6 +26,7 @@
         "desc": "a rare prism",
         "hex": "#4e2b87",
         "element": "none",
+        "power": 4,
         "cutscene": null
     },
     "waterbase": {
@@ -33,6 +36,7 @@
         "desc": "The prism harnessing a weak power of water.",
         "hex": "#101ee0",
         "element": "water",
+        "power": 8,
         "cutscene": null
     },
     "firebase": {
@@ -42,6 +46,7 @@
         "desc": "The prism harnessing a weak power of fire.",
         "hex": "#ff5400",
         "element": "fire",
+        "power": 8,
         "cutscene": null
     },
     "earthbase": {
@@ -51,6 +56,7 @@
         "desc": "The prism harnessing a weak power of earth.",
         "hex": "#581908",
         "element": "earth",
+        "power": 8,
         "cutscene": null
     },
     "frostbase": {
@@ -60,6 +66,7 @@
         "desc": "The prism harnessing a weak power of ice and frost.",
         "hex": "#c7eae4",
         "element": "ice",
+        "power": 12,
         "cutscene": null
     },
     "lightningbase": {
@@ -69,6 +76,7 @@
         "desc":"The prism harnessing a weak power of electricity and lightning.",
         "hex": "#fdca40",
         "element": "electricity",
+        "power": 12,
         "cutscene": null
     },
     "darkbase": {
@@ -78,6 +86,7 @@
         "desc":"A prism containing relics of the ancient Darkness spirits.",
         "hex": "#403645",
         "element": "darkness",
+        "power": 22,
         "cutscene": null
     },
     "lightbase": {
@@ -87,6 +96,7 @@
         "desc": "A prism containing relics of the ancient Light spirits.",
         "hex": "#f2efba",
         "element": "light",
+        "power": 22,
         "cutscene": null
     },
     "thunder": {
@@ -96,6 +106,7 @@
         "desc": "It is said to be the embodiment of atmospheric thunderstorm forces.",
         "hex": "#f6ae2d",
         "element": "lightning",
+        "power": 26,
         "cutscene": "basic"
     },
     "blizzard": {
@@ -105,6 +116,7 @@
         "desc": "It is said to be the embodiment of strong, cold blizzzard forces.",
         "hex": "#005e84",
         "element": "ice",
+        "power": 26,
         "cutscene": "basic"
     },
     "water1": {
@@ -114,6 +126,7 @@
         "desc": "A crystal infused with the power of the water element.",
         "hex": "#101ee0",
         "element": "water",
+        "power": 30,
         "cutscene": "basic"
     },
     "fire1": {
@@ -123,6 +136,7 @@
         "desc": "A crystal infused with the power of the fire element.",
         "hex": "#ff5400",
         "element": "fire",
+        "power": 30,
         "cutscene": "basic"
     },
     "earth1": {
@@ -132,6 +146,7 @@
         "desc": "A crystal infused with the power of the earth element.",
         "hex": "#581908",
         "element": "earth",
+        "power": 30,
         "cutscene": "basic"
     },
     "bleed": {
@@ -140,7 +155,28 @@
         "rarity": 3333,
         "desc": "Watch as the blood drips slowly...",
         "hex": "#610018",
-        "element": "none",
+        "element": "hell",
+        "power": 33,
+        "cutscene": "basic"
+    },
+    "frostbound": {
+        "code": "frostbound",
+        "name": "Frostbound",
+        "rarity": 6800,
+        "desc": "This prism will freeze to the touch.",
+        "hex": "#83bcff",
+        "element": "ice",
+        "power": 45,
+        "cutscene": "basic"
+    },
+    "shockbound": {
+        "code": "shockbound",
+        "name": "Shockbound",
+        "rarity": 6800,
+        "desc": "This prism will shock an unworthy bearer.",
+        "hex": "#ffd972",
+        "element": "electricity",
+        "power": 45,
         "cutscene": "basic"
     }
 }
