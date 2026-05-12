@@ -5,6 +5,10 @@ from rich import print
 import os
 import math
 from rich.console import Console
+from rich.panel import Panel
+from rich.text import Text
+from rich.align import Align
+from rich.rule import Rule
 console = Console()
 
 def clear(): 
@@ -16,172 +20,131 @@ import time
 import math
 
 
-def basic_cutscene(color,text):
-    WIDTH = 40
+# ── shared renderer ────────────────────────────────────────────────────────────
+def render_panel(lines: list[str], border_color: str, subtitle: str = ""):
+    """Render a list of Rich markup strings inside the shared Panel border."""
+    body = Text.from_markup("\n".join(lines))
+    console.clear()
+    console.print()
+    console.print(Rule(style=f"dim {border_color}"))
+    console.print(Align.center(
+        Panel(
+            Align.center(body),
+            border_style=f"bold {border_color}",
+            padding=(0, 6),
+            subtitle=f"[dim {border_color}]{subtitle}[/]" if subtitle else "",
+        )
+    ))
+    console.print(Rule(style=f"dim {border_color}"))
+
+
+# ── cutscene ───────────────────────────────────────────────────────────────────
+def basic_cutscene(color: str, text: str, rarity: int):
+    WIDTH  = 40
     HEIGHT = 5
+    cx, cy = WIDTH // 2, HEIGHT // 2
 
-    # --- Phase 1: close into white ---
+    # --- Phase 1: white bars close inward ---
     for i in range(21):
-        clear()
-
+        lines = []
         for _ in range(HEIGHT):
             row = ""
-
             for k in range(WIDTH):
-                if k < i or k >= WIDTH - i:
-                    row += "[white]█[/]"
-                else:
-                    row += " "
-
-            print(row)
-
+                row += "[white]█[/]" if (k < i or k >= WIDTH - i) else " "
+            lines.append(row)
+        render_panel(lines, "white")
         time.sleep(0.04)
 
-    # --- Phase 2: blue paints from centre ---
-    cx = WIDTH // 2
-    cy = HEIGHT // 2
+    # --- Phase 2: colour floods from centre ---
     max_radius = math.sqrt(cx**2 + cy**2)
-
     for frame in range(int(max_radius) + 2):
-        clear()
-
+        lines = []
         for y in range(HEIGHT):
             row = ""
-
             for x in range(WIDTH):
                 dist = math.sqrt((x - cx)**2 + (y - cy)**2)
-
-                if dist <= frame:
-                    # blue wave
-                    row += f"[{color}]█[/]"
-                else:
-                    # keep the white canvas
-                    row += "[white]█[/]"
-
-            print(row)
-
+                row += f"[{color}]█[/]" if dist <= frame else "[white]█[/]"
+            lines.append(row)
+        render_panel(lines, color)
         time.sleep(0.04)
-    
-    # -- phase 3: open from centre into star --
-    for frame in range(int(max_radius) + 2):
-        clear()
 
+    # --- Phase 3: open from centre, star appears ---
+    for frame in range(int(max_radius) + 2):
+        lines = []
         for y in range(HEIGHT):
             row = ""
-
             for x in range(WIDTH):
                 dist = math.sqrt((x - cx)**2 + (y - cy)**2)
-
-                if dist <= frame:
-                    # cleared area (empty)
-                    char = " "
-                else:
-                    # remaining blue
-                    char = f"[{color}]█[/]"
-
-                # ⭐ star stays in centre
                 if x == cx and y == cy:
                     char = "[bold white]✦[/]"
-
-                row += char
-
-            print(row)
-
-        time.sleep(0.04)
-    
-    # -- phase 4: star blink + horizontal expansion --
-
-# ⭐ blink twice (same as before)
-    for _ in range(3):
-        clear()
-        for y in range(HEIGHT):
-            row = ""
-            for x in range(WIDTH):
-                if x == cx and y == cy:
-                    row += "[bold white]✦[/]"
+                elif dist <= frame:
+                    char = " "
                 else:
-                    row += " "
-            print(row)
+                    char = f"[{color}]█[/]"
+                row += char
+            lines.append(row)
+        render_panel(lines, color)
+        time.sleep(0.04)
+
+    # --- Phase 4a: star blinks ---
+    blank = [" " * WIDTH] * HEIGHT
+    for _ in range(3):
+        star_lines = [" " * WIDTH] * HEIGHT
+        star_row = " " * cx + "[bold white]✦[/]" + " " * (WIDTH - cx - 1)
+        star_lines = blank[:cy] + [star_row] + blank[cy + 1:]
+        render_panel(star_lines, color)
+        time.sleep(0.6)
+        render_panel(blank, color)
         time.sleep(0.6)
 
-        clear()
-        for _ in range(HEIGHT):
-            print(" " * WIDTH)
-        time.sleep(0.6)
-
-
-    # 🌊 expanding wave that reveals text (letters stay centered)
-    text = f"> {text} <"
-    text_x = cx - len(text)//2
-    text_y = cy
+    # --- Phase 4b: wave expands and reveals text ---
+    label   = f"> {text} <"
+    text_x  = cx - len(label) // 2
 
     for offset in range(cx + 2):
-        clear()
-
+        lines = []
         for y in range(HEIGHT):
             row = ""
-
             for x in range(WIDTH):
                 char = " "
-
                 if y == cy:
-                    left_edge = cx - offset
+                    left_edge  = cx - offset
                     right_edge = cx + offset
-
-                    # leading wave blocks
                     if x == left_edge or x == right_edge:
                         char = f"[bold {color}]█[/]"
-
-                    # reveal letters AFTER wave passes
-                    if text_x <= x < text_x + len(text):
-                        if x >= left_edge and x <= right_edge:
-                            # wave has passed → reveal letter
-                            letter = text[x - text_x]
-                            char = f"[{color}]{letter}[/]"
-
+                    if text_x <= x < text_x + len(label):
+                        if left_edge <= x <= right_edge:
+                            letter = label[x - text_x]
+                            char = f"[bold {color}]{letter}[/]"
                 row += char
-
-            print(row)
-
+            lines.append(row)
+        render_panel(lines, color, subtitle=f"✦ 1 in {rarity} ✦")
         time.sleep(0.015)
 
 
 #MARK: Epic
 
-def epic_cutscene(color="bold cyan", msg="hello"):
-    text="█"
-    console = Console()
-    
-    # Configuration
-    WIDTH = 60
+def epic_cutscene(color,msg,rarity):
+    BLOCK = "█"
+    WIDTH  = 40   # inner canvas width (Panel adds padding on top)
     HEIGHT = 10
-    
-    # Starting positions for Phase 1
+
     h1_x, h1_y = 0, 1
     h2_x, h2_y = WIDTH - 1, 8
-    
-    trail1 = []
-    trail2 = []
-    MAX_TRAIL = 20 
-
+    trail1, trail2 = [], []
+    MAX_TRAIL = 20
     target_x, target_y = WIDTH // 2, HEIGHT // 2
+
+    # ── helpers ────────────────────────────────────────────────────────────────
+    def blank_grid():
+        return [[" "] * WIDTH for _ in range(HEIGHT)]
+
+    def grid_to_lines(grid):
+        return ["".join(row) for row in grid]
 
     # ==========================================
     # PHASE 1: The Swirl
     # ==========================================
-    def draw_phase1(h1, h2, t1, t2):
-        clear()
-        output = []
-        for y in range(HEIGHT):
-            line_chars = []
-            for x in range(WIDTH):
-                if (x == h1[0] and y == h1[1]) or (x == h2[0] and y == h2[1]) or (x, y) in t1 or (x, y) in t2:
-                    line_chars.append(f"{text}")
-                else:
-                    line_chars.append(" ")
-            output.append("".join(line_chars))
-        console.print("\n".join(output))
-
     active = True
     while active:
         if h1_x == target_x and h1_y == target_y and h2_x == target_x and h2_y == target_y:
@@ -194,163 +157,88 @@ def epic_cutscene(color="bold cyan", msg="hello"):
         else:
             trail1.append((h1_x, h1_y))
             trail2.append((h2_x, h2_y))
-            
             if len(trail1) > MAX_TRAIL: trail1.pop(0)
             if len(trail2) > MAX_TRAIL: trail2.pop(0)
 
             if h1_x < target_x: h1_x += 1
             elif h1_y < target_y: h1_y += 1
-                
             if h2_x > target_x: h2_x -= 1
             elif h2_y > target_y: h2_y -= 1
 
-        draw_phase1((h1_x, h1_y), (h2_x, h2_y), trail1, trail2)
-        
-        
+        grid = blank_grid()
+        for (x, y) in trail1 + trail2:
+            if 0 <= x < WIDTH and 0 <= y < HEIGHT:
+                grid[y][x] = f"[dim white]{BLOCK}[/]"
+        if 0 <= h1_y < HEIGHT and 0 <= h1_x < WIDTH:
+            grid[h1_y][h1_x] = f"[white]{BLOCK}[/]"
+        if 0 <= h2_y < HEIGHT and 0 <= h2_x < WIDTH:
+            grid[h2_y][h2_x] = f"[white]{BLOCK}[/]"
+
+        render_panel(grid_to_lines(grid), "white")
         time.sleep(0.04)
 
-    # Brief pause before the diamond expansion
     time.sleep(0.2)
 
     # ==========================================
-    # PHASE 2: The Fading Diamond
+    # PHASE 2: Fading Diamond (×2 white, ×1 colour)
     # ==========================================
-    # A radius of 5 creates a 10x10 diamond (actually 11x11, fitting the 10 height perfectly)
-    MAX_RADIUS = 5 
-    
-    # We loop past MAX_RADIUS to allow the fade wave to completely pass the screen edge
+    MAX_RADIUS = 5
 
-    for i in range (2):
-        time.sleep(0.5)
-        clear()
-        for wave_front in range(1, MAX_RADIUS + 7): 
-            clear()
-            output = []
-            
-            for y in range(HEIGHT):
-                line_chars = []
-                for x in range(WIDTH):
-                    # The center block remains unchanged eternally
-                    if x == target_x and y == target_y:
-                        line_chars.append(f"{text}")
-                        continue
-
-                    # Calculate Manhattan Distance to form the diamond
-                    dist_from_center = abs(x - target_x) + abs(y - target_y)
-
-                    # Only draw if within the max diamond size AND reached by the wave front
-                    if dist_from_center <= MAX_RADIUS and dist_from_center <= wave_front:
-                        
-                        # Calculate how far this cell is behind the expanding edge
-                        dist_from_edge = wave_front - dist_from_center
-                        
-                        if dist_from_edge <= 2:
-                            char = text
-                        elif dist_from_edge == 3:
-                            char = "▓"
-                        elif dist_from_edge == 4:
-                            char = "▒"
-                        elif dist_from_edge == 5:
-                            char = "░"
-                        else:
-                            char = " " # Completely faded
-                            
-                        if char != " ":
-                            line_chars.append(f"{char}")
-                        else:
-                            line_chars.append(" ")
-                    else:
-                        line_chars.append(" ")
-                        
-                output.append("".join(line_chars))
-                
-            console.print("\n".join(output))
-            time.sleep(0.04) 
-
-    #last diamond
-    time.sleep(0.5)
-    clear()
-    for wave_front in range(1, MAX_RADIUS + 7): 
-        clear()
-        output = []
-        
+    def draw_diamond(wave_front, diamond_color):
+        grid = blank_grid()
         for y in range(HEIGHT):
-            line_chars = []
             for x in range(WIDTH):
-                # The center block remains unchanged eternally
                 if x == target_x and y == target_y:
-                    line_chars.append(f"[{color}]{text}")
+                    grid[y][x] = f"[{diamond_color}]{BLOCK}[/]"
                     continue
+                dist  = abs(x - target_x) + abs(y - target_y)
+                if dist <= MAX_RADIUS and dist <= wave_front:
+                    behind = wave_front - dist
+                    if   behind <= 2: char = BLOCK
+                    elif behind == 3: char = "▓"
+                    elif behind == 4: char = "▒"
+                    elif behind == 5: char = "░"
+                    else:             char = None
+                    if char:
+                        grid[y][x] = f"[{diamond_color}]{char}[/]"
+        return grid_to_lines(grid)
 
-                # Calculate Manhattan Distance to form the diamond
-                dist_from_center = abs(x - target_x) + abs(y - target_y)
+    for _ in range(2):
+        time.sleep(0.5)
+        for wave_front in range(1, MAX_RADIUS + 7):
+            render_panel(draw_diamond(wave_front, "white"), "white")
+            time.sleep(0.04)
 
-                # Only draw if within the max diamond size AND reached by the wave front
-                if dist_from_center <= MAX_RADIUS and dist_from_center <= wave_front:
-                    
-                    # Calculate how far this cell is behind the expanding edge
-                    dist_from_edge = wave_front - dist_from_center
-                    
-                    if dist_from_edge <= 2:
-                        char = text
-                    elif dist_from_edge == 3:
-                        char = "▓"
-                    elif dist_from_edge == 4:
-                        char = "▒"
-                    elif dist_from_edge == 5:
-                        char = "░"
-                    else:
-                        char = " " # Completely faded
-                        
-                    if char != " ":
-                        line_chars.append(f"[{color}]{char}")
-                    else:
-                        line_chars.append(" ")
-                else:
-                    line_chars.append(" ")
-                    
-            output.append("".join(line_chars))
-            
-        console.print("\n".join(output))
-        time.sleep(0.06) 
-    clear()
+    # Final coloured diamond
+    time.sleep(0.5)
+    for wave_front in range(1, MAX_RADIUS + 7):
+        render_panel(draw_diamond(wave_front, color), color)
+        time.sleep(0.05)
 
     time.sleep(0.5)
 
-    cx = WIDTH // 2
-    cy = HEIGHT // 2
-
-    text = f"> {msg} <"
-    text_x = cx - len(text)//2
-    text_y = cy
+    # ==========================================
+    # PHASE 3: Wave reveals text
+    # ==========================================
+    cx, cy = WIDTH // 2, HEIGHT // 2
+    label  = f"> {msg} <"
+    text_x = cx - len(label) // 2
 
     for offset in range(cx + 2):
-        clear()
+        grid = blank_grid()
+        for x in range(WIDTH):
+            left_edge  = cx - offset
+            right_edge = cx + offset
 
-        for y in range(HEIGHT):
-            row = ""
+            char = None
+            if x == left_edge or x == right_edge:
+                char = f"[bold {color}]{BLOCK}[/]"
+            if text_x <= x < text_x + len(label) and left_edge <= x <= right_edge:
+                letter = label[x - text_x]
+                char = f"[bold {color}]{letter}[/]"
 
-            for x in range(WIDTH):
-                char = " "
+            if char:
+                grid[cy][x] = char
 
-                if y == cy:
-                    left_edge = cx - offset
-                    right_edge = cx + offset
-
-                    # leading wave blocks
-                    if x == left_edge or x == right_edge:
-                        char = f"[{color}]█[/]"
-
-                    # reveal letters AFTER wave passes
-                    if text_x <= x < text_x + len(text):
-                        if x >= left_edge and x <= right_edge:
-                            # wave has passed → reveal letter
-                            letter = text[x - text_x]
-                            char = f"[{color}]{letter}[/]"
-
-                row += char
-
-            print(row)
-
+        render_panel(grid_to_lines(grid), color, subtitle=f"✦ 1 in {rarity} ✦")
         time.sleep(0.01)
-

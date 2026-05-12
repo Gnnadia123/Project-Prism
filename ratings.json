@@ -29,10 +29,20 @@
         "power": 4,
         "cutscene": null
     },
+    "alloy": {
+        "code": "alloy",
+        "name": "Alloy",
+        "rarity": 64,
+        "desc": "a common metal prism",
+        "hex": "#4e2b87",
+        "element": "none",
+        "power": 5,
+        "cutscene": null
+    },
     "waterbase": {
         "code": "waterbase",
         "name": "Water (Base)",
-        "rarity": 64,
+        "rarity": 256,
         "desc": "The prism harnessing a weak power of water.",
         "hex": "#101ee0",
         "element": "water",
@@ -42,7 +52,7 @@
     "firebase": {
         "code": "firebase",
         "name": "Fire (Base)",
-        "rarity": 64,
+        "rarity": 256,
         "desc": "The prism harnessing a weak power of fire.",
         "hex": "#ff5400",
         "element": "fire",
@@ -52,7 +62,7 @@
     "earthbase": {
         "code": "earthbase",
         "name": "Earth (Base)",
-        "rarity": 64,
+        "rarity": 256,
         "desc": "The prism harnessing a weak power of earth.",
         "hex": "#581908",
         "element": "earth",
@@ -62,7 +72,7 @@
     "frostbase": {
         "code": "frostbase",
         "name": "Frost (Base)",
-        "rarity": 128,
+        "rarity": 350,
         "desc": "The prism harnessing a weak power of ice and frost.",
         "hex": "#c7eae4",
         "element": "ice",
@@ -72,7 +82,7 @@
     "lightningbase": {
         "code": "lightningbase",
         "name": "Lightning (Base)",
-        "rarity": 128,
+        "rarity": 350,
         "desc":"The prism harnessing a weak power of electricity and lightning.",
         "hex": "#fdca40",
         "element": "electricity",
@@ -82,7 +92,7 @@
     "darkbase": {
         "code": "darkbase",
         "name": "Base Of Darkness",
-        "rarity": 250,
+        "rarity": 500,
         "desc":"A prism containing relics of the ancient Darkness spirits.",
         "hex": "#403645",
         "element": "darkness",
@@ -92,7 +102,7 @@
     "lightbase": {
         "code": "lightbase",
         "name": "Base of Light",
-        "rarity": 250,
+        "rarity": 500,
         "desc": "A prism containing relics of the ancient Light spirits.",
         "hex": "#f2efba",
         "element": "light",
@@ -122,7 +132,7 @@
     "water1": {
         "code": "water1",
         "name": "Water I",
-        "rarity": 2000,
+        "rarity": 2100,
         "desc": "A crystal infused with the power of the water element.",
         "hex": "#101ee0",
         "element": "water",
@@ -132,7 +142,7 @@
     "fire1": {
         "code": "fire1",
         "name": "Fire I",
-        "rarity": 2000,
+        "rarity": 2100,
         "desc": "A crystal infused with the power of the fire element.",
         "hex": "#ff5400",
         "element": "fire",
@@ -142,7 +152,7 @@
     "earth1": {
         "code": "earth1",
         "name": "Earth I",
-        "rarity": 2000,
+        "rarity": 2100,
         "desc": "A crystal infused with the power of the earth element.",
         "hex": "#581908",
         "element": "earth",
@@ -152,7 +162,7 @@
     "bleed": {
         "code": "bleed",
         "name": "Bleed", 
-        "rarity": 3333,
+        "rarity": 4444,
         "desc": "Watch as the blood drips slowly...",
         "hex": "#610018",
         "element": "hell",
@@ -177,6 +187,26 @@
         "hex": "#ffd972",
         "element": "electricity",
         "power": 45,
+        "cutscene": "basic"
+    },
+    "prismlight" :{
+        "code": "prismlight",
+        "name": "Prism Of Light",
+        "rarity": 8000,
+        "desc": "A prism that shines with a pure and radiant light.",
+        "hex": "#eff6e0",
+        "element": "light",
+        "power": 58,
+        "cutscene": "basic"
+    },
+    "prismdark": {
+        "code": "prismdark",
+        "name": "Prism Of Darkness",
+        "rarity": 8888,
+        "desc": "A mysterious prism that seems to absorb all light around it.",
+        "hex": "#1a1a1a",
+        "element": "darkness",
+        "power": 60,
         "cutscene": "basic"
     }
 }

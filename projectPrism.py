@@ -4,6 +4,11 @@ from rich.console import Console
 from rich.prompt import Prompt
 from rich.table import Table
 from rich.text import Text
+from rich.align import Align
+from rich.rule import Rule
+
+console = Console()
+#-------------------------
 import json
 import curses
 import random
@@ -67,22 +72,45 @@ def get_sorted_inv():
 
 
 def roll_anim(key):
-    for i in range (8):
-        a = random.choice(list(RARITIES.keys()))
-        print(f"> [{RARITIES[a]['hex']}] {RARITIES[a]['name']}[/] <")
-        time.sleep(0.1)
-        clear()
-    for i in range (4):
-        a = random.choice(list(RARITIES.keys()))
-        print(f"> [{RARITIES[a]['hex']}] {RARITIES[a]['name']}[/] <")
-        time.sleep(0.2)
-        clear()
-    for i in range(2):
-        a = random.choice(list(RARITIES.keys()))
-        print(f"> [{RARITIES[a]['hex']}] {RARITIES[a]['name']}[/] <")
-        time.sleep(0.6)
-        clear()
-    print(f"> [{RARITIES[key]['hex']}] {RARITIES[key]['name']}[/] <")
+    start = time.time()
+    t = 0.02
+
+    while time.time() - start < 3:
+        time.sleep(t)
+        console.clear()
+
+        rarity = random.choice(list(RARITIES.values()))
+        label = Text(f"✦  {rarity['name']}  ✦", style=f"bold {rarity['hex']}")
+
+        console.print()
+        console.print(Rule(style="dim white"))
+        console.print(Align.center(
+            Panel(
+                Align.center(label),
+                border_style=f"{rarity['hex']}",
+                padding=(1, 6),
+            )
+        ))
+        console.print(Rule(style="dim white"))
+
+        t *= 1.2
+
+    # Final reveal
+    console.clear()
+    winner = RARITIES[key]
+    label = Text(f"★  {winner['name']}  ★", style=f"bold {winner['hex']}")
+
+    console.print()
+    console.print(Rule(f"[{winner['hex']}]Roll Result[/]", style=winner['hex']))
+    console.print(Align.center(
+        Panel(
+            Align.center(label),
+            border_style=f"bold {winner['hex']}",
+            padding=(2, 8),
+            subtitle=f"[{winner['hex']}]✦ 1 in {winner['rarity']} ✦[/]",
+        )
+    ))
+    console.print(Rule(style=winner['hex']))
 
 
 def roll():
@@ -98,13 +126,11 @@ def roll():
             rarity = RARITIES[key]["rarity"]
             if random.randint(1,rarity) <=1:
                 roll_anim(key)
-                if not RARITIES[key]["cutscene"]:
-                    print(f"1 in {rarity} chance")
-                else:
-                    if RARITIES[key]["cutscene"] == "basic":
-                        basic_cutscene(RARITIES[key]["hex"], RARITIES[key]["name"])
-                    elif RARITIES[key]["cutscene"] == "epic":
-                        epic_cutscene(RARITIES[key]["hex"], RARITIES[key]["name"])
+                if RARITIES[key]["cutscene"] == "basic":
+                    basic_cutscene(RARITIES[key]["hex"], RARITIES[key]["name"], RARITIES[key]["rarity"])
+                elif RARITIES[key]["cutscene"] == "epic":
+                    epic_cutscene(RARITIES[key]["hex"], RARITIES[key]["name"], RARITIES[key]["rarity"])
+
                 try:
                     playerData["shardinv"][key] += 1
                 except:
@@ -167,7 +193,7 @@ def bounty_board():
         else:
             combat()
 
-console = Console()
+
 
 # Example clear function as requested
 def clear():
@@ -205,22 +231,43 @@ def forge(playerData: dict, RARITIES: dict):
         console.print(f"[cyan]Total Power:[/] {total_power}")
         console.print(f"[cyan]Prisms Added:[/] {len(selected_prisms)}/4 minimum\n")
         
-        # Display available inventory
+        # Display available inventory and build numbered list
+        # Display available inventory and build numbered list
         console.print("[bold green]Available Prisms in Inventory:[/bold green]")
-        available_found = False
-            
-        for p_code, amount in playerData.get("shardinv", {}).items():
-            if amount and int(amount) > 0 and p_code in RARITIES:
+        
+        # Create the Selection Table
+        inv_table = Table(show_header=True, header_style="bold cyan")
+        inv_table.add_column("#", style="dim", width=3)
+        inv_table.add_column("Prism Name")
+        inv_table.add_column("Element", justify="center")
+        inv_table.add_column("Power", justify="right")
+        inv_table.add_column("Stock", justify="right")
+
+        available_choices = [] 
+        
+        for p_code, amount in temp_inv.items():
+            if amount > 0 and p_code in RARITIES:
+                available_choices.append(p_code)
                 p_data = RARITIES[p_code]
                 color = p_data.get("hex", "#ffffff")
-                console.print(f"- [{color}]{p_code}[/] ({p_data['name']}): x{amount} | Element: {p_data['element']} | Power: {p_data['power']}")
-                available_found = True
+                index_num = len(available_choices)
                 
-        if not available_found:
+                # Add row to the selection table
+                inv_table.add_row(
+                    str(index_num),
+                    Text(p_data['name'], style=color),
+                    p_data['element'].title(),
+                    str(p_data['power']),
+                    f"x{amount}"
+                )
+                
+        if not available_choices:
             console.print("[red]No more prisms available![/red]")
+        else:
+            console.print(inv_table)
             
         # Get player input
-        console.print("\nType the [bold]code[/bold] of a prism to add it.")
+        console.print("\nType the [bold]number[/bold] of a prism to add it.")
         choice = Prompt.ask("Or type [bold yellow]'done'[/bold yellow] to forge, or [bold red]'cancel'[/bold red] to exit").lower().strip()
         
         if choice == "cancel":
@@ -235,24 +282,33 @@ def forge(playerData: dict, RARITIES: dict):
             else:
                 break
                 
-        # Validate chosen prism
-        if choice not in temp_inv or temp_inv[choice] <= 0:
+        # Number Validation
+        try:
+            # Convert input to integer and adjust for 0-based indexing
+            choice_idx = int(choice) - 1 
+            
+            # Check if the number is within the valid range
+            if choice_idx < 0 or choice_idx >= len(available_choices):
+                clear()
+                console.print(f"[bold red]Invalid choice! Please pick a number between 1 and {len(available_choices)}.[/bold red]\n")
+                continue
+                
+            # Map the valid number back to the actual prism code
+            selected_code = available_choices[choice_idx]
+            
+        except ValueError:
+            # Catches the error if they typed a random word instead of a number
             clear()
-            console.print(f"[bold red]You don't have any '{choice}' in your inventory![/bold red]\n")
+            console.print("[bold red]Invalid input! Please enter a valid number, 'done', or 'cancel'.[/bold red]\n")
             continue
             
-        if choice not in RARITIES:
-            clear()
-            console.print(f"[bold red]Invalid prism code '{choice}'![/bold red]\n")
-            continue
-            
-        # Check compatibility
-        new_element = RARITIES[choice]["element"]
+        # Check compatibility using the selected_code
+        new_element = RARITIES[selected_code]["element"]
         if current_element == "none":
             # If forge is currently typeless, it takes on the new element (if the new one isn't typeless)
             if new_element != "none":
                 current_element = new_element
-                primary_hex = RARITIES[choice].get("hex", "#ffffff")
+                primary_hex = RARITIES[selected_code].get("hex", "#ffffff")
             is_compatible = True
         elif new_element == "none" or new_element == current_element:
             # Matches current element or is typeless
@@ -266,10 +322,10 @@ def forge(playerData: dict, RARITIES: dict):
             continue
             
         # Add to forge
-        selected_prisms.append(choice)
-        temp_inv[choice] -= 1
+        selected_prisms.append(selected_code)
+        temp_inv[selected_code] -= 1
         clear()
-        console.print(f"[green]Added {RARITIES[choice]['name']} to the forge![/green]\n")
+        console.print(f"[green]Added {RARITIES[selected_code]['name']} to the forge![/green]\n")
 
     # --- FORGING CUTSCENE ---
     clear()
@@ -286,7 +342,7 @@ def forge(playerData: dict, RARITIES: dict):
     clear()
     
     # --- WEAPON CALCULATION ---
-    # Deduct permanently from actual playerSave now that forging is successful
+    # Deduct permanently from actual playerData now that forging is successful
     for p_code in selected_prisms:
         playerData["shardinv"][p_code] -= 1
         # Cleanup empty entries
@@ -326,7 +382,7 @@ def forge(playerData: dict, RARITIES: dict):
     }
     
     # Save to player gear
-    playerData.setdefault("gear", {})[weapon_id] = new_weapon
+    playerData.setdefault("weapons", {})[weapon_id] = new_weapon
     
     # Final display
     weapon_text = Text()
@@ -357,7 +413,7 @@ def main():
             clear()
             bounty_board()
         elif choice == "4":
-            forge()
+            forge(playerData, RARITIES)
         elif choice == "5":
             print("Goodbye!")
             saveFile(playerData)

@@ -4,20 +4,28 @@
     "talons": 100,
     "invcap": 80,
     "shardinv": {
-        "uncommon": 174,
-        "standard": 360,
-        "rare": 45,
-        "waterbase": 14,
-        "darkbase": 3,
+        "uncommon": 179,
+        "standard": 373,
+        "rare": 47,
+        "waterbase": 15,
         "earthbase": 17,
         "firebase": 7,
-        "lightningbase": 7,
-        "frostbase": 6,
+        "lightningbase": 10,
+        "frostbase": 9,
         "lightbase": 4,
         "thunder": 1,
         "blizzard": 1,
         "earth1": 0
     },
-    "weapons": {},
+    "weapons": {
+        "wep_1778564524_635": {
+            "name": "Void Dagger",
+            "type": "Dagger",
+            "element": "darkness",
+            "power_rating": 70,
+            "damage": 74,
+            "color": "#403645"
+        }
+    },
     "gear": {}
 }
