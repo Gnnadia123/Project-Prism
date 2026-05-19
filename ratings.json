@@ -208,5 +208,25 @@
         "element": "darkness",
         "power": 60,
         "cutscene": "basic"
+    },
+    "chrono_fragment": {
+        "code": "chrono_fragment",
+        "name": "Chrono Fragment",
+        "rarity": 9700,
+        "desc": "Nearby clocks desynchronize whenever the fragment becomes emotionally unstable.",
+        "hex": "#e3c567",
+        "element": "time",
+        "power": 64,
+        "cutscene": "basic"
+    },
+    "abyss_ember": {
+        "code": "abyss_ember",
+        "name": "Ember Of The Abyss",
+        "rarity": 13333,
+        "desc": "A crystal of infernal crimson forged within collapsing abyssal faultlines below.",
+        "hex": "#520800",
+        "element": "hell",
+        "power": 76,
+        "cutscene": "epic"
     }
 }
