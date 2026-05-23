@@ -1,3 +1,5 @@
+print("Now loading...")
+
 from rich import print
 from rich.panel import Panel
 from rich.console import Console
@@ -6,22 +8,22 @@ from rich.table import Table
 from rich.text import Text
 from rich.align import Align
 from rich.rule import Rule
+from rich.layout import Layout
+from rich.live import Live
+
+from rich_gradient import Gradient
 
 console = Console()
-#-------------------------
-
-from textual.app import App, ComposeResult
-from textual.containers import Container
-from textual.widgets import Static
-from textual.reactive import reactive
 
 #-------------------------
 
 import json
-import curses
+import string
 import random
 import os
 import time
+import threading
+import readchar
 from datetime import datetime
 from cutscenes import basic_cutscene, epic_cutscene
 
@@ -38,8 +40,20 @@ PREFIXES = {
     "time": ["Chrono", "Temporal", "Eternal", "Epoch", "Momentous"]
 }
 
+RANK_COLORS = {
+    "E": "bbcbcb",
+    "D": "E6CCBE",
+    "C": "83C5BE",
+    "B": "95190C",
+    "A": "228CDB",
+    "S": "A846A0",
+}
+
 def clear():
     os.system("clear")
+
+def reset():
+    os.system("reset")
 
 def saveFile(p):
     with open("playerSave.json", "w") as f:
@@ -55,6 +69,7 @@ DEFAULT_SAVE = {
     "startDate": (datetime.fromtimestamp(time.time())).strftime("%d-%m-%Y"),
     "shardinv": {
     },
+    "inv": {},
     "weapons": {},
     "gear": {
 
@@ -76,6 +91,9 @@ with open ("ratings.json", "r") as f:
 with open ("enemies.json", "r") as f:
     ENEMIES = json.load(f)
 
+with open ("items.json", "r") as f:
+    ITEMS = json.load(f)
+
 def get_sorted_inv():
     return sorted(
         [(item, count) for item, count in playerData["shardinv"].items() if count > 0],
@@ -89,7 +107,7 @@ def roll_anim(key):
 
     while time.time() - start < 3:
         time.sleep(t)
-        console.clear()
+        clear()
 
         rarity = random.choice(list(RARITIES.values()))
         label = Text(f"✦  {rarity['name']}  ✦", style=f"bold {rarity['hex']}")
@@ -152,32 +170,45 @@ def roll():
     saveFile(playerData)
 
 def inv():
-    print("Inventory:")
-    current_inv = get_sorted_inv()
-    for i, (item, count) in enumerate(current_inv, start=1):
-        print(f"{i}. {RARITIES[item]['name']}: {count}")
-    ch = input("Press enter to go back or a the number to view details: ")
-    if ch.isdigit() and 1 <= int(ch) <= len(current_inv):
-        while True:
-            clear()
-            item, count = current_inv[int(ch) - 1]
-            print(f"[{RARITIES[item]['hex']}] {RARITIES[item]['name']}[/]")
-            print(f"Rarity: 1 in {RARITIES[item]['rarity']} chance")
-            print(f"Description: {RARITIES[item]['desc']}")
+    clear()
+    print("1. Prisms")
+    print("2. Items")
+    a = input("Enter choice: ")
+    if a == "1":
+        current_inv = get_sorted_inv()
+        for i, (item, count) in enumerate(current_inv, start=1):
+            print(f"{i}. {RARITIES[item]['name']}: {count}")
+        ch = input("Press enter to go back or a the number to view details: ")
+        if ch.isdigit() and 1 <= int(ch) <= len(current_inv):
+            while True:
+                clear()
+                item, count = current_inv[int(ch) - 1]
+                print(f"[{RARITIES[item]['hex']}] {RARITIES[item]['name']}[/]")
+                print(f"Rarity: 1 in {RARITIES[item]['rarity']} chance")
+                print(f"Description: {RARITIES[item]['desc']}")
 
-            if RARITIES[item]['cutscene']:
-                print("This item has a cutscene!")
-                c = input("Press enter to go back or 'A' to view cutscene: ")
-                if c.upper() == "A":
-                    if RARITIES[item]['cutscene'] == "basic":
-                        basic_cutscene(RARITIES[item]['hex'], RARITIES[item]['name'], RARITIES[item]['rarity'])
-                        time.sleep(2)
-                        clear()
+                if RARITIES[item]['cutscene']:
+                    print("This item has a cutscene!")
+                    c = input("Press enter to go back or 'A' to view cutscene: ")
+                    if c.upper() == "A":
+                        if RARITIES[item]['cutscene'] == "basic":
+                            basic_cutscene(RARITIES[item]['hex'], RARITIES[item]['name'], RARITIES[item]['rarity'])
+                            time.sleep(2)
+                            clear()
+                    else:
+                        break
                 else:
+                    input("Press enter to go back: ")
                     break
-            else:
-                input("Press enter to go back: ")
-                break
+    elif a == "2":
+        for item in playerData['inv']:
+            curItem = ITEMS[item]
+            prin = ""
+            prin += (f"[#{RANK_COLORS[curItem['rank']]}]{curItem['name']}[/]")
+            prin += " | "
+            prin += (f"[#{RANK_COLORS[curItem['rank']]}]Rank {curItem['rank']}[/]")
+            print(prin)
+        input("Press enter to continue: ")
 
 def draw_bar(current, maximum, length, color="#aaaaaa"):
     filled = int((current / maximum) * length)
@@ -268,8 +299,18 @@ def combat(enem,playerData):
         for item in equipped:
             equippedname.append(RARITIES[item]["name"])
         return equipped, equippedname
+    uniqueprisms = []
+    for prism in playerData["shardinv"]:
+        uniqueprisms.append(prism)
+    if len(uniqueprisms) < 3:
+        print("You do not have enough prisms to bring into combat!")
+        time.sleep(2)
+        return
     playerwep = equip_weapon()
-    equippedprisms, equippedprismsname = equip_prism()
+    try:
+        equippedprisms, equippedprismsname = equip_prism()
+    except:
+        return
 
     clear()
     print(f"Prisms equipped: {", ".join(equippedprismsname)}")
@@ -278,124 +319,242 @@ def combat(enem,playerData):
         star = "✦"*enemy["difficulty"]
     console.print(f"A [bold red] {enemy['name']} < {star} >[/] appeared!")
 
-    turn = 1
-    playerTurn = True
+    combat_running = False
+    last_key = None
+    key_seq = []
+    input_thread = None
 
-    def main_combat_loop(stdscr, playerData, enemyData, weapon, equippedprisms):
+    def listener():
+        nonlocal combat_running
+        nonlocal last_key
+        nonlocal key_seq
 
-        curses.curs_set(0)
-        stdscr.nodelay(True)
-        stdscr.timeout(30)
+        while combat_running:
+            key = readchar.readkey()
+            key_seq.append(key)
+    
+    def start_input_thread():
+        nonlocal combat_running
+        nonlocal input_thread
 
-        player_health = playerData["hp"]
-        enemy_health = enemyData["health"]
-        current_phase = "player_attack"
+        combat_running = True
+        input_thread = threading.Thread(
+            target=listener,
+            daemon=True
+        )
 
-        combo = 0
-        damage = 0
-        current_index = 0
-        running = True
+        input_thread.start()
+    
+    def stop_input_thread():
+        nonlocal combat_running
+        nonlocal input_thread
+        combat_running = False
 
-        while running:
-            if player_health <= 0 or enemy_health <= 0:
-                break
+        if input_thread is not None:
+            input_thread.join(timeout=0.1)
 
-            if current_phase == "player_attack": #player attack phase
-                time_limit = 5
-                seq_start = time.time()
-                combo_keys = ["z", "x", "c", "v"]
-                atk_sequence = [random.choice(combo_keys) for _ in range (7)]
 
-                while True:
-                    remaining = round(time_limit - (time.time()-seq_start), 1)
-                    if remaining <= 0:
-                        break
-                    
-                    stdscr.clear()
-                    stdscr.addstr(1,2,"== Offensive phase ==")
-                    stdscr.addstr(3,2,f"{weapon["name"]}")
-                    stdscr.addstr(5,2,f"Time remaining: {remaining}")
+    def draw_bar(remaining,total,w):
+        n = int(max(0, remaining) / max(total, 1) * w)
+        return str("[" + ("▰" * n + "▱" * (w - n) ) + "]")
 
-                    stdscr.addstr(8,2,f"Attack Sequence: ")
 
-                    display = ""
+    def main_combat_loop(playerData, enemyData, weapon, equippedprisms):
+        combat_running = True
+        PAUSE_MS = 0.03
 
-                    for i, key in enumerate(atk_sequence):
-                        if i < current_index:
-                            display += f"[{key.upper()}] "
-                        else:
-                            display += f" {key.upper()}  "
-                    
-                    stdscr.addstr(10,2,display)
-                    stdscr.addstr(12, 2, f"Combo: {combo}")
-                    stdscr.addstr(13, 2, f"Damage: {damage}")
+        current_phase = "attack"
+        usedprisms = {}
 
-                    stdscr.refresh()
+        for prism in equippedprisms:
+            # `equippedprisms` is a list of prism codes (strings).
+            # Initialize a small state dict for each equipped prism.
+            usedprisms[prism] = {"used": False, "broken": False}
 
-                    key = stdscr.getch()
-                    if key == -1:
-                        continue
-                    
-                    try:
-                        pressed = chr(key).lower()
-                    except:
-                        continue
-                    
-                    if pressed == atk_sequence[current_index]:
-                        damage += round(((weapon["damage"] + random.randint(-10,10)) / len(atk_sequence))) + combo * 2
-                        current_index += 1
 
-                        if current_index >= len(atk_sequence):
-                            current_phase = "enemy_attack"
-                            current_index = 0
-                            break
+        phase_color = {
+            "attack": "blue",
+            "defence": "red",
+            "quicktime rush": "green",
+            "prism activation": "teal"
+        }
+
+        enemy_health = enemyData['health']
+        player_health = playerData['hp']
+        enemy_status_effect = ""
+        player_status_effect = ""
+        dodge_count = 0
+        dodge_req = 0
+
+        def dashboards() -> Layout:
+            layout = Layout()
+            layout.split_column(
+                Layout(name="top", ratio=5),
+                Layout(name="bottom", ratio=12)
+            )
+            layout["bottom"].split_row(
+                Layout(name="left", ratio=7),
+                Layout(name="right", ratio=5)
+            )
+            layout["right"].split_column(
+                Layout(name="right_top", ratio=6),
+                Layout(name="right_bottom", ratio=6)
+            )
+            return layout
+
+        def update_box(layout, box_name, content, styl, title = "") -> None:
+            layout[box_name].update(
+                Panel(content, title=title, border_style=styl, title_align="center")
+            )
+
+        layout = dashboards()
+
+        def panel_manager():
+            top_text = f"[red]Enemy HP: {enemy_health}[{phase_color[current_phase]}] ── {current_phase.upper()} ── [green]Player HP: {player_health}[/]"
+            update_box(layout, "top", top_text, "white")
+
+            if current_phase == "attack":
+
+                sequence_display = []
+                for i, key in enumerate(atk_sequence):
+                    if i < current_attack_index:
+                        sequence_display.append(f"[bold blue]{key}[/]")
                     else:
-                        combo = 0
-                damage = round(damage * random.random())
-                enemy_health -= damage
-                current_phase = "enemy_attack"
+                        sequence_display.append(key)
+                display_seq = " ".join(sequence_display)
+                left_text = f"Time Remaining: {time_remaining}\n\nAttack Sequence:\n{display_seq}"
+                color = "#2cdb1f" if int(time_remaining * 10) % 2 == 0 else "#1f9100"
+                update_box(layout, "left", left_text, color)
 
-            if current_phase == "enemy_attack":
-                attack_name, attack_power = random.choice(list(enemyData['attack'].items()))
-                dodge_needed = enemyData['speed'] * 3
-                dodge_count = 0
+            elif current_phase == "defence":
 
-                time_limit = 5
-                start_time = time.time()
-                while True:
-                    remaining = round(time_limit - (time.time() - start_time),1)
+                bar = draw_bar(dodge_count, dodge_req, 30)
+                left_text = "Mash A/D to avoid attacks!\n\n" + bar + f" {dodge_count}/{dodge_req}" + "\n\n" + str(time_remaining) 
+                color = "#db221f" if int(time_remaining * 10) % 2 == 0 else "#910000"
+                update_box(layout, "left", left_text, color)
 
-                    if remaining <= 0:
-                        break
-
-                    stdscr.refresh()
-                    stdscr.clear()
-                    stdscr.addstr(2,2,"== Defensive Phase ==")
-                    stdscr.addstr(3,2,"Dodge by mashing A and D or hit a Perfect Parry for a counterrattack!")
-                    bar = draw_bar(dodge_count,dodge_needed,30)
-                    stdscr.addstr(5,2,f"Dodge meter: [{bar}]")
-
-                    key = stdscr.getch()
-
-                    if key == -1:
-                        continue
-
-                    try:
-                        pressed = chr(key).lower()
-                    except:
-                        continue
-
-                    if pressed == "a" or pressed == "d":
-                        dodge_count += 1
-                
-                if dodge_count >= dodge_needed:
-                    stdscr.addstr(3,2,"Dodge successful!")
+            prism_lines = []
+            for prism in usedprisms:
+                if usedprisms[prism]["used"]:
+                    prism_lines.append(f"[{RARITIES[prism]['hex']}]< {RARITIES[prism]['name']} >[/]")
+                elif usedprisms[prism]["broken"]:
+                    prism_lines.append(f"[strike {RARITIES[prism]['hex']}]" + RARITIES[prism]['name'] + "[/]")
                 else:
-                    dmg = round(2 * dodge_count / dodge_needed) * attack_power
-                    stdscr.addstr(4,2,f"Took {dmg} damage!")
-                current_phase = "player_attack"
+                    prism_lines.append(f"[{RARITIES[prism]['hex']}]" + RARITIES[prism]['name'] + "[/]")
+            update_box(layout, "right_top", Align.center("\n".join(prism_lines)), "white")
 
-    curses.wrapper(main_combat_loop, playerData, enemy, playerwep, None)
+            weapon_lines = [
+                f"[{weapon['color']}] {weapon['name']} [/]",
+                f"Element: {weapon['element'].capitalize()}",
+                f"Damage: {weapon['damage']}",
+                f"PR: {weapon['power_rating']}"
+            ]
+            update_box(layout, "right_bottom", "\n".join(weapon_lines), "white")
+
+        start_input_thread()
+
+        change = True
+        atk_sequence = []
+        time_limit = 5
+        dodge_limit = ENEMIES[enem]['atktime']
+
+        with Live(layout, refresh_per_second=30, screen=True) as live:
+            while combat_running:
+                if player_health <= 0 or enemy_health <= 0:
+                    combat_running = False
+                    break
+                if current_phase == "attack":
+                    if change:
+                        atk_sequence = [random.choice(["Z", "X", "C", "V"]) for _ in range(7)]
+                        current_attack_index = 0
+                        change = False
+                    start_time = time.time()
+                    combo = 0
+                    dmg_dealt = 0
+                    while True:
+                        time_remaining = round((time_limit - (time.time() - start_time)), 1)
+                        if time_remaining <= 0 or current_attack_index >= len(atk_sequence):
+                            current_phase = "defence"
+                            break
+
+                        if key_seq:
+                            key = key_seq.pop(0)
+                            if key.upper() == atk_sequence[current_attack_index]:
+                                combo += 1
+                                current_attack_index += 1
+                                dmg_dealt = round((combo * weapon["damage"]) / len(atk_sequence), 1)
+                            else:
+                                combo = 0
+
+                        panel_manager()
+                        live.update(layout)
+                        time.sleep(PAUSE_MS)
+                    enemy_health = max(0, round(enemy_health - dmg_dealt,1))
+                    current_phase = "defence"
+                elif current_phase == "defence":
+                    attack = random.choice(list(enemyData["attack"].keys()))
+                    start_time = time.time()
+                    dodge_req = random.randint(round(enemyData["speed"] * 2.5)-3, (round(enemyData["speed"] * 2.5)) + 5)
+                    dodge_count = 0
+                    dodge_success = False
+                    while True:
+                        time_remaining = round(dodge_limit - (time.time() - start_time), 1)
+                        if dodge_count >= dodge_req or time_remaining <= 0:
+                            dodge_success = True
+                            break
+
+                        if key_seq:
+                            key = key_seq.pop(0)
+                            if key.upper() in ["A", "D"]:
+                                dodge_count += 1
+                        panel_manager()
+                        live.update(layout)
+                        time.sleep(PAUSE_MS)
+                    if dodge_success:
+                        dmg_received = 0
+                    else:
+                        deficit = dodge_req - dodge_count
+                        dmg_received = round(0.7 * deficit * enemyData[attack])
+                    player_health = max(0, player_health - dmg_received)
+                    change = True
+                    current_phase = "attack"
+                panel_manager()
+                live.update(layout)
+
+    main_combat_loop(playerData,enemy,playerwep,equippedprisms)
+    stop_input_thread()
+    print("Buffering... Give us a moment")
+    time.sleep(1)
+    reset()
+    clear()
+    winItems = []
+    uniquewinItems = []
+    console.print(Rule("[bold green] You win! [/]"))
+    for i in range(random.randint(1,(ENEMIES[enem]['difficulty'])+2)):
+        itemWon = random.choice(list(ENEMIES[enem]['drops']))
+        winItems.append(itemWon)
+    uniquewinItems = set(winItems)
+    for item in uniquewinItems:
+        talon = False
+        count = 0
+        for eac in winItems:
+            if eac == item and eac != "talon":
+                count += 1
+                try:
+                    playerData['inv'][eac] += 1 
+                except: 
+                    playerData['inv'][eac] = 1
+            elif eac == item and eac == "talon":
+                talon = True
+                count += random.randint(ENEMIES[enem]['difficulty']*10, ENEMIES[enem]['difficulty']*20)
+                playerData['talons'] += count
+        if talon:
+            console.print(f"[italic yellow]{count}x Talons[/]")
+        else:
+            console.print(f"[italic]{count}x {ITEMS[item]['name']} | Rank {ITEMS[item]['rank']}[/]")
+    input("Press enter to continue... ")
+
+
 
 def bounty_board():
     now = datetime.now()
@@ -405,21 +564,26 @@ def bounty_board():
     seed_string = f"{hour}{round_minute:02d}"
     seed_int = int(seed_string)
     seed = seed_int * 1000471 - 516637
+    enemies = []
     random.seed(seed)
     print("Bounty Board:")
     for i in range(3):
         enemy = random.choice(list(ENEMIES.keys()))
+        enemies.append(enemy)
         print(f"{i+1}. {ENEMIES[enemy]['name']}")
     c = input("Press enter to go back or the number to view details: ")
     if c.isdigit() and 1 <= int(c) <= 3:
-        print(f"Enemy: {ENEMIES[enemy]['name']}")
-        print(f"Health: {ENEMIES[enemy]['health']}")
-        print(f"{'★' * ENEMIES[enemy]['difficulty']}")
+        c = int(c)
+        c -= 1
+        print(f"Enemy: {ENEMIES[enemies[int(c)]]['name']}")
+        print(f"Health: {ENEMIES[enemies[int(c)]]['health']}")
+        print(f"{'★' * ENEMIES[enemies[int(c)]]['difficulty']}")
         a = input("Press enter to fight or Q to go back:")
         if a.upper() == "Q":
             return
         else:
-            combat(enemy, playerData)
+            combat(enemies[int(c)], playerData)
+    random.seed()
 
 
 def forge(playerData: dict, RARITIES: dict):
@@ -551,7 +715,7 @@ def forge(playerData: dict, RARITIES: dict):
     clear()
     console.print("[bold orange3]The forge begins to roar...[/bold orange3]")
     time.sleep(1.5)
-    console.print(f"[{primary_hex}]Sparks of {current_element} magic fly into the air...[/{primary_hex}]")
+    console.print(f"[{primary_hex}]Sparks of magic fly into the air...[/{primary_hex}]")
     time.sleep(1.5)
     console.print("[bold yellow]The heavy hammer strikes the anvil![/bold yellow]")
     
@@ -618,20 +782,22 @@ def forge(playerData: dict, RARITIES: dict):
 def stat(playerData):
     clear()
     console.print(Rule("[#8CD790] ✦ Player Stats ✦ [/]"))
-    print(f"Lifetime rolls: {playerData['rolls']}")
-    print(f"Start date: {playerData['startDate']}")
+    print(f"[bold green]Lifetime rolls: {playerData['rolls']}[/]")
+    print(f"[italic red]Start date: {playerData['startDate']}[/]")
+    print(f"[bold yellow]Talons: {playerData['talons']}[/]")
     input("Press enter to continue: ")
 
 def main():
     while True:
         clear()
-        print("- Project Prism -")
-        print("1. Roll")
-        print("2. Inventory")
-        print("3. Bounty Board")
-        print("4. Forge")
-        print("5. Stats")
-        print("6. Exit")
+        menu = Align.center("""
+        1. Roll
+        2. Inventory
+        3. Bounty Board, Battle
+        4. Weapon Forge
+        5. Statistics
+        """)
+        print(Panel(menu,title=" ✦ Project Prism ✦ ",subtitle="6. Quit",style="#8CBCB9",border_style="#EAFFDA"))
         choice = input("Choose an option: ")
         if choice == "1":
             roll()
@@ -645,18 +811,13 @@ def main():
         elif choice == "5":
             stat(playerData)
         elif choice == "6":
-            print("Goodbye!")
+            print("Saving...")
             saveFile(playerData)
+            print("Saved!")
             break
         else:
-            print("Invalid choice, try again.")
+            print("[red]Invalid choice, try again. [/]")
             time.sleep(1)
             clear()
-
-# pygame.mixer.music.load("music/tn-shi - Synthesis..mp3")
-# pygame.mixer.music.play()
-
-# while True:
-#     pass
-
+reset()
 main()

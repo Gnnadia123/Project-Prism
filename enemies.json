@@ -11,12 +11,12 @@
         "drops": [
             "mon-essence1", "life-essence1", "talon"
         ],
-        "rate": 64
+        "atktime": 6.4
     },
     "goblin": {
         "name": "Goblin",
         "difficulty": 1,
-        "health": 125,
+        "health": 120,
         "attack": {
             "Punch": 15,
             "Kick": 20,
@@ -26,6 +26,36 @@
         "drops": [
             "mon-essence1", "life-essence1", "talon"
         ],
-        "rate": 64
+        "atktime": 6.4
+    },
+        "zombie": {
+        "name": "Zombie",
+        "difficulty": 1,
+        "health": 115,
+        "attack": {
+            "Punch": 17,
+            "Kick": 20,
+            "Infect": 30
+        },
+        "speed": 14,
+        "drops": [
+            "mon-essence1", "life-essence1", "talon"
+        ],
+        "atktime": 6.4
+    },
+    "werewolf_i": {
+        "name": "Werewolf (I)",
+        "difficulty": 2,
+        "health": 165,
+        "attack": {
+            "Kick": 28,
+            "Bite": 35,
+            "Clawed Fangs": 55
+        },
+        "speed": 14,
+        "drops": [
+            "mon-essence2", "life-essence1", "talon", "werewolf-claw"
+        ],
+        "atktime": 6.4
     }
 }

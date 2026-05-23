@@ -159,6 +159,16 @@
         "power": 30,
         "cutscene": "basic"
     },
+    "chaos": {
+        "code": "chaos",
+        "name": "Chaos",
+        "rarity": 3000,
+        "desc": "The embodiment of pandemonium and chaos.",
+        "hex": "#FC5130",
+        "element": "hell",
+        "power": 32,
+        "cutscene": "basic"
+    },
     "bleed": {
         "code": "bleed",
         "name": "Bleed", 
@@ -167,6 +177,16 @@
         "hex": "#610018",
         "element": "hell",
         "power": 33,
+        "cutscene": "basic"
+    },
+    "tectonic": {
+        "code": "tectonic",
+        "name": "Tectonic",
+        "rarity": 5500,
+        "desc": "A heavy, earthen shard that vibrates with the grinding weight of the tectonic plates.",
+        "hex": "#795548",
+        "element": "earth",
+        "power": 55,
         "cutscene": "basic"
     },
     "frostbound": {
@@ -219,6 +239,16 @@
         "power": 64,
         "cutscene": "basic"
     },
+    "overdrive": {
+        "code": "overdrive",
+        "name": "Overdrive",
+        "rarity": 12500,
+        "desc": "Violent arcs of high-voltage electricity violently crackle across its jagged surface.",
+        "hex": "#FFEB3B",
+        "element": "lightning",
+        "power": 73,
+        "cutscene": "epic"
+    },
     "abyss_ember": {
         "code": "abyss_ember",
         "name": "Ember Of The Abyss",
@@ -227,6 +257,86 @@
         "hex": "#520800",
         "element": "hell",
         "power": 76,
+        "cutscene": "epic"
+    },
+    "halo": {
+        "code": "halo",
+        "name": "Halo",
+        "rarity": 15000,
+        "desc": "Dim starlight drifts endlessly above and around this sacred heavenly crystalline relic.",
+        "hex": "#FBDF88",
+        "element": "light",
+        "power": 80,
+        "cutscene": "epic"
+    },
+    "magma_core": {
+        "code": "magma_core",
+        "name": "Magma Core",
+        "rarity": 22000,
+        "desc": "The molten, churning heart of an ancient volcano contained within a crystal shell.",
+        "hex": "#FF5722",
+        "element": "fire",
+        "power": 95,
+        "cutscene": "epic"
+    },
+    "cryo_core": {
+        "code": "cryo_core",
+        "name": "Cryo Core",
+        "rarity": 27500,
+        "desc": "An absolute frost is locked deep within, freezing the very air molecules around it solid.",
+        "hex": "#A7FFEB",
+        "element": "ice",
+        "power": 114,
+        "cutscene": "epic"
+    },
+    "nightmare": {
+        "code": "nightmare",
+        "name": "Nightmare",
+        "rarity": 36000,
+        "desc": "Formed from the collective dread of the subconscious, it radiates a chilling, dark terror.",
+        "hex": "#311B92",
+        "element": "darkness",
+        "power": 130,
+        "cutscene": "epic"
+    },
+    "seraph": {
+        "code": "seraph",
+        "name": "Seraph",
+        "rarity": 41500,
+        "desc": "Blinding, pristine radiance emanates from this flawless shard, illuminating the darkest corners.",
+        "hex": "#FFF59D",
+        "element": "light",
+        "power": 93,
+        "cutscene": "epic"
+    },
+    "epoch": {
+        "code": "epoch",
+        "name": "Epoch",
+        "rarity": 49000,
+        "desc": "A relic that anchors historical eras; peering into it reveals fast-forwarded echoes of the past.",
+        "hex": "#E040FB",
+        "element": "time",
+        "power": 155,
+        "cutscene": "epic"
+    },
+    "calamity": {
+        "code": "calamity",
+        "name": "Chaos: Calamity",
+        "rarity": 66666,
+        "desc": "The absolute disaster and chaos; it is said to bring doom to unworthy bearers.",
+        "hex": "#510D0A",
+        "element": "hell",
+        "power": 178,
+        "cutscene": "epic"
+    },
+    "antimatter": {
+        "code": "antimatter",
+        "name": "Antimatter",
+        "rarity": 69700,
+        "desc": "When coming into contact with matter, it bursts into a huge amount of energy, cancelling out any real objects.",
+        "hex": "#26262B",
+        "element": "darkness",
+        "power": 182,
         "cutscene": "epic"
     }
 }

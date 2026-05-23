@@ -14,5 +14,21 @@
         "rarity": "Common",
         "desc": "The essence of life, containing basic vitality.",
         "price": 12
+    },
+    "werewolf-claw": {
+        "code": "werewolf-claw",
+        "name": "Werewolf Claw",
+        "rank": "E",
+        "rarity": "Uncommon",
+        "desc": "The sharp and sturdy fang of a fallen werewolf.",
+        "price": 30
+    },
+    "mon-essence2": {
+        "code": "mon-essence2",
+        "name": "Monster Essence (II)",
+        "rank": "D",
+        "rarity": "Rare",
+        "desc": "A more prized essence of a monster.",
+        "price": 65
     }
 }
