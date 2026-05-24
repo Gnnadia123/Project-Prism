@@ -24,7 +24,7 @@ import math
 def render_panel(lines: list[str], border_color: str, subtitle: str = ""):
     """Render a list of Rich markup strings inside the shared Panel border."""
     body = Text.from_markup("\n".join(lines))
-    console.clear()
+    clear()
     console.print()
     console.print(Rule(style=f"dim {border_color}"))
     console.print(Align.center(

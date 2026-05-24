@@ -195,6 +195,10 @@ def inv():
                             basic_cutscene(RARITIES[item]['hex'], RARITIES[item]['name'], RARITIES[item]['rarity'])
                             time.sleep(2)
                             clear()
+                        elif RARITIES[item]['cutscene'] == "epic":
+                            epic_cutscene(RARITIES[item]['hex'], RARITIES[item]['name'], RARITIES[item]['rarity'])
+                            time.sleep(2)
+                            clear()
                     else:
                         break
                 else:
@@ -389,16 +393,16 @@ def combat(enem,playerData):
         def dashboards() -> Layout:
             layout = Layout()
             layout.split_column(
-                Layout(name="top", ratio=5),
-                Layout(name="bottom", ratio=12)
+                Layout(name="top", size=5),
+                Layout(name="bottom", size=12)
             )
             layout["bottom"].split_row(
-                Layout(name="left", ratio=7),
-                Layout(name="right", ratio=5)
+                Layout(name="left", size=40),
+                Layout(name="right", size=20)
             )
             layout["right"].split_column(
-                Layout(name="right_top", ratio=6),
-                Layout(name="right_bottom", ratio=6)
+                Layout(name="right_top", size=6),
+                Layout(name="right_bottom", size=6)
             )
             return layout
 
@@ -781,10 +785,20 @@ def forge(playerData: dict, RARITIES: dict):
 
 def stat(playerData):
     clear()
+    best = ""
+    bestrarity = 0
+    bestcode = ""
+    for prism in playerData["shardinv"]:
+        if RARITIES[prism]["rarity"] > bestrarity:
+            bestrarity = RARITIES[prism]["rarity"]
+            best = RARITIES[prism]["name"]
+            bestcode = RARITIES[prism]["code"]
+
     console.print(Rule("[#8CD790] ✦ Player Stats ✦ [/]"))
     print(f"[bold green]Lifetime rolls: {playerData['rolls']}[/]")
     print(f"[italic red]Start date: {playerData['startDate']}[/]")
     print(f"[bold yellow]Talons: {playerData['talons']}[/]")
+    print(f"[italic cyan]Best Roll: [{RARITIES[bestcode]["hex"]} italic]{best} (1 in {bestrarity})[/]")
     input("Press enter to continue: ")
 
 def main():
