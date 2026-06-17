@@ -7,7 +7,8 @@
         "hex": "#b9b9b9",
         "element": "none",
         "power": 1,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "uncommon": {
         "code": "uncommon",
@@ -17,7 +18,8 @@
         "hex": "#22803b",
         "element": "none",
         "power": 2,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "rare": {
         "code": "rare",
@@ -27,7 +29,8 @@
         "hex": "#4e2b87",
         "element": "none",
         "power": 4,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "alloy": {
         "code": "alloy",
@@ -37,7 +40,8 @@
         "hex": "#4e2b87",
         "element": "none",
         "power": 5,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "waterbase": {
         "code": "waterbase",
@@ -47,7 +51,8 @@
         "hex": "#101ee0",
         "element": "water",
         "power": 8,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "firebase": {
         "code": "firebase",
@@ -57,7 +62,8 @@
         "hex": "#ff5400",
         "element": "fire",
         "power": 8,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "earthbase": {
         "code": "earthbase",
@@ -67,7 +73,8 @@
         "hex": "#581908",
         "element": "earth",
         "power": 8,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "frostbase": {
         "code": "frostbase",
@@ -77,7 +84,8 @@
         "hex": "#c7eae4",
         "element": "ice",
         "power": 12,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "lightningbase": {
         "code": "lightningbase",
@@ -87,7 +95,8 @@
         "hex": "#fdca40",
         "element": "electricity",
         "power": 12,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "darkbase": {
         "code": "darkbase",
@@ -97,7 +106,8 @@
         "hex": "#403645",
         "element": "darkness",
         "power": 22,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "lightbase": {
         "code": "lightbase",
@@ -107,7 +117,8 @@
         "hex": "#f2efba",
         "element": "light",
         "power": 22,
-        "cutscene": null
+        "cutscene": null,
+        "mutation": null
     },
     "thunder": {
         "code": "thunder",
@@ -117,7 +128,8 @@
         "hex": "#f6ae2d",
         "element": "lightning",
         "power": 26,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "blizzard": {
         "code": "blizzard",
@@ -127,7 +139,8 @@
         "hex": "#005e84",
         "element": "ice",
         "power": 26,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "water1": {
         "code": "water1",
@@ -137,7 +150,8 @@
         "hex": "#101ee0",
         "element": "water",
         "power": 30,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "fire1": {
         "code": "fire1",
@@ -147,7 +161,8 @@
         "hex": "#ff5400",
         "element": "fire",
         "power": 30,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "earth1": {
         "code": "earth1",
@@ -157,7 +172,8 @@
         "hex": "#581908",
         "element": "earth",
         "power": 30,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "chaos": {
         "code": "chaos",
@@ -167,7 +183,8 @@
         "hex": "#FC5130",
         "element": "hell",
         "power": 32,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "bleed": {
         "code": "bleed",
@@ -177,7 +194,8 @@
         "hex": "#610018",
         "element": "hell",
         "power": 33,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "tectonic": {
         "code": "tectonic",
@@ -187,7 +205,8 @@
         "hex": "#795548",
         "element": "earth",
         "power": 55,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "frostbound": {
         "code": "frostbound",
@@ -197,7 +216,8 @@
         "hex": "#83bcff",
         "element": "ice",
         "power": 45,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "shockbound": {
         "code": "shockbound",
@@ -207,7 +227,8 @@
         "hex": "#ffd972",
         "element": "electricity",
         "power": 45,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "prismlight" :{
         "code": "prismlight",
@@ -217,7 +238,8 @@
         "hex": "#eff6e0",
         "element": "light",
         "power": 58,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "prismdark": {
         "code": "prismdark",
@@ -227,7 +249,8 @@
         "hex": "#1a1a1a",
         "element": "darkness",
         "power": 60,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "chrono_fragment": {
         "code": "chrono_fragment",
@@ -237,7 +260,8 @@
         "hex": "#e3c567",
         "element": "time",
         "power": 64,
-        "cutscene": "basic"
+        "cutscene": "basic",
+        "mutation": null
     },
     "overdrive": {
         "code": "overdrive",
@@ -247,7 +271,8 @@
         "hex": "#FFEB3B",
         "element": "lightning",
         "power": 73,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "abyss_ember": {
         "code": "abyss_ember",
@@ -257,7 +282,8 @@
         "hex": "#520800",
         "element": "hell",
         "power": 76,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "halo": {
         "code": "halo",
@@ -267,7 +293,8 @@
         "hex": "#FBDF88",
         "element": "light",
         "power": 80,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "magma_core": {
         "code": "magma_core",
@@ -277,7 +304,8 @@
         "hex": "#FF5722",
         "element": "fire",
         "power": 95,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "cryo_core": {
         "code": "cryo_core",
@@ -287,7 +315,8 @@
         "hex": "#A7FFEB",
         "element": "ice",
         "power": 114,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "nightmare": {
         "code": "nightmare",
@@ -297,7 +326,8 @@
         "hex": "#311B92",
         "element": "darkness",
         "power": 130,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "seraph": {
         "code": "seraph",
@@ -307,7 +337,8 @@
         "hex": "#FFF59D",
         "element": "light",
         "power": 93,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "epoch": {
         "code": "epoch",
@@ -317,7 +348,8 @@
         "hex": "#E040FB",
         "element": "time",
         "power": 155,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
     },
     "calamity": {
         "code": "calamity",
@@ -327,7 +359,8 @@
         "hex": "#510D0A",
         "element": "hell",
         "power": 178,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": "chaos"
     },
     "antimatter": {
         "code": "antimatter",
@@ -337,6 +370,18 @@
         "hex": "#26262B",
         "element": "darkness",
         "power": 182,
-        "cutscene": "epic"
+        "cutscene": "epic",
+        "mutation": null
+    },
+    "prismlight2": {
+        "code": "prismlight2",
+        "name": "Prism Of Light: Radiance",
+        "rarity": 96000,
+        "desc": "An evolved form of the Prism Of Light, radiating an even more intense and pure light.",
+        "hex": "#FAFAFA",
+        "element": "light",
+        "power": 200,
+        "cutscene": "epic",
+        "mutation": "prismlight"
     }
 }

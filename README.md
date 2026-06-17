@@ -18,6 +18,8 @@ How deep will you go? And how many secrets will you uncover as you get progressi
 Featuring fully-fledged text-based cutscenes running directly in your terminal, this game offers a break for anyone tired of the flashy lights and loud noises in every other RNG game nowadays. 
 
 ### Changelog ###
+- 17 Jun 2026 > *Gen 0-3* > Added mutations and testing with relic crafting 
+
 - 23 May 2026 > *Gen 0-2* > Combat UI overhaul, 11 new prisms, new enemies and drops
 
 - 19 May 2026 > *Gen 0-1* > Added combat, forge mechanics and new Prisms

@@ -4,6 +4,7 @@
         "name": "Monster Essence (I)",
         "rank": "E",
         "rarity": "Common",
+        "traits": ["beast", "primal", "corrupted"],
         "desc": "The essence of a monster, containing its basic attributes.",
         "price": 10
     },
@@ -12,6 +13,7 @@
         "name": "Life Essence (I)",
         "rank": "E",
         "rarity": "Common",
+        "traits": ["organic", "pure", "soul"],
         "desc": "The essence of life, containing basic vitality.",
         "price": 12
     },
@@ -20,6 +22,7 @@
         "name": "Werewolf Claw",
         "rank": "E",
         "rarity": "Uncommon",
+        "traits": ["beast", "primal", "undead"],
         "desc": "The sharp and sturdy fang of a fallen werewolf.",
         "price": 30
     },
@@ -28,6 +31,7 @@
         "name": "Monster Essence (II)",
         "rank": "D",
         "rarity": "Rare",
+        "traits": ["beast", "primal", "corrupted"],
         "desc": "A more prized essence of a monster.",
         "price": 65
     }

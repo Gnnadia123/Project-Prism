@@ -49,6 +49,14 @@ RANK_COLORS = {
     "S": "A846A0",
 }
 
+RELIC_OPPOSITES = {
+    "soul": "undead",
+    "beast": "cleanliness",
+    "corrupted": "pure",
+    "primal": "evolved",
+    "organic": "polluted",
+}
+
 def clear():
     os.system("clear")
 
@@ -96,9 +104,13 @@ with open ("items.json", "r") as f:
 
 def get_sorted_inv():
     return sorted(
-        [(item, count) for item, count in playerData["shardinv"].items() if count > 0],
+        [(item, count) for item, count in playerData["shardinv"].items() if count > 0 and RARITIES.get(item, {}).get("mutation") is None],
         key=lambda x: RARITIES.get(x[0], {"rarity": float("inf")})["rarity"]
     )
+
+def get_mutations_for_item(base_code):
+    """Get all mutations for a given base item"""
+    return [code for code, data in RARITIES.items() if data.get("mutation") == base_code]
 
 
 def roll_anim(key):
@@ -155,16 +167,32 @@ def roll():
             key = random.choice(list(RARITIES))
             rarity = RARITIES[key]["rarity"]
             if random.randint(1,rarity) <=1:
-                roll_anim(key)
-                if RARITIES[key]["cutscene"] == "basic":
-                    basic_cutscene(RARITIES[key]["hex"], RARITIES[key]["name"], RARITIES[key]["rarity"])
-                elif RARITIES[key]["cutscene"] == "epic":
-                    epic_cutscene(RARITIES[key]["hex"], RARITIES[key]["name"], RARITIES[key]["rarity"])
+                # Check if this item has mutations
+                mutations = get_mutations_for_item(key)
+                final_key = key
+                
+                if mutations:
+                    # Roll for mutations: chance is (mutation_rarity / base_rarity)
+                    for mut_code in mutations:
+                        mut_rarity = RARITIES[mut_code]["rarity"]
+                        base_rarity = RARITIES[key]["rarity"]
+                        # Calculate mutation chance: 1 in (mutation_rarity / base_rarity)
+                        mutation_chance_denominator = mut_rarity / base_rarity
+                        
+                        if random.random() < (1 / mutation_chance_denominator):
+                            final_key = mut_code
+                            break
+                
+                roll_anim(final_key)
+                if RARITIES[final_key]["cutscene"] == "basic":
+                    basic_cutscene(RARITIES[final_key]["hex"], RARITIES[final_key]["name"], RARITIES[final_key]["rarity"])
+                elif RARITIES[final_key]["cutscene"] == "epic":
+                    epic_cutscene(RARITIES[final_key]["hex"], RARITIES[final_key]["name"], RARITIES[final_key]["rarity"])
 
                 try:
-                    playerData["shardinv"][key] += 1
+                    playerData["shardinv"][final_key] += 1
                 except:
-                    playerData["shardinv"].update({key:1})
+                    playerData["shardinv"].update({final_key:1})
                 break
     playerData['rolls'] += count
     saveFile(playerData)
@@ -187,9 +215,21 @@ def inv():
                 print(f"Rarity: 1 in {RARITIES[item]['rarity']} chance")
                 print(f"Description: {RARITIES[item]['desc']}")
 
+                # Check for mutations
+                mutations = get_mutations_for_item(item)
+                mutation_list = []
+                if mutations:
+                    print(f"\n[bold yellow]Mutations:[/bold yellow]")
+                    for i, mut_code in enumerate(mutations, start=1):
+                        mut_data = RARITIES[mut_code]
+                        mut_count = playerData["shardinv"].get(mut_code, 0)
+                        if mut_count > 0:
+                            mutation_list.append(mut_code)
+                            print(f"  {i}. [{mut_data['hex']}]{mut_data['name']} (1 in {mut_data['rarity']}): {mut_count}[/]")
+
                 if RARITIES[item]['cutscene']:
                     print("This item has a cutscene!")
-                    c = input("Press enter to go back or 'A' to view cutscene: ")
+                    c = input("Press enter to go back, 'A' to view cutscene, or mutation number to view mutation details: ").strip().lower()
                     if c.upper() == "A":
                         if RARITIES[item]['cutscene'] == "basic":
                             basic_cutscene(RARITIES[item]['hex'], RARITIES[item]['name'], RARITIES[item]['rarity'])
@@ -199,11 +239,66 @@ def inv():
                             epic_cutscene(RARITIES[item]['hex'], RARITIES[item]['name'], RARITIES[item]['rarity'])
                             time.sleep(2)
                             clear()
+                    elif c.isdigit() and 1 <= int(c) <= len(mutation_list):
+                        # View mutation details
+                        while True:
+                            clear()
+                            mut_code = mutation_list[int(c) - 1]
+                            mut_data = RARITIES[mut_code]
+                            print(f"[{mut_data['hex']}] {mut_data['name']}[/]")
+                            print(f"Rarity: 1 in {mut_data['rarity']} chance")
+                            print(f"Description: {mut_data['desc']}")
+                            
+                            if mut_data['cutscene']:
+                                print("This mutation has a cutscene!")
+                                mut_choice = input("Press enter to go back or 'A' to view cutscene: ").strip().upper()
+                                if mut_choice == "A":
+                                    if mut_data['cutscene'] == "basic":
+                                        basic_cutscene(mut_data['hex'], mut_data['name'], mut_data['rarity'])
+                                        time.sleep(2)
+                                        clear()
+                                    elif mut_data['cutscene'] == "epic":
+                                        epic_cutscene(mut_data['hex'], mut_data['name'], mut_data['rarity'])
+                                        time.sleep(2)
+                                        clear()
+                                else:
+                                    break
+                            else:
+                                input("Press enter to go back: ")
+                                break
                     else:
                         break
                 else:
-                    input("Press enter to go back: ")
-                    break
+                    c = input("Press enter to go back or mutation number to view mutation details: ").strip().lower()
+                    if c.isdigit() and 1 <= int(c) <= len(mutation_list):
+                        # View mutation details
+                        while True:
+                            clear()
+                            mut_code = mutation_list[int(c) - 1]
+                            mut_data = RARITIES[mut_code]
+                            print(f"[{mut_data['hex']}] {mut_data['name']}[/]")
+                            print(f"Rarity: 1 in {mut_data['rarity']} chance")
+                            print(f"Description: {mut_data['desc']}")
+                            
+                            if mut_data['cutscene']:
+                                print("This mutation has a cutscene!")
+                                mut_choice = input("Press enter to go back or 'A' to view cutscene: ").strip().upper()
+                                if mut_choice == "A":
+                                    if mut_data['cutscene'] == "basic":
+                                        basic_cutscene(mut_data['hex'], mut_data['name'], mut_data['rarity'])
+                                        time.sleep(2)
+                                        clear()
+                                    elif mut_data['cutscene'] == "epic":
+                                        epic_cutscene(mut_data['hex'], mut_data['name'], mut_data['rarity'])
+                                        time.sleep(2)
+                                        clear()
+                                else:
+                                    break
+                            else:
+                                input("Press enter to go back: ")
+                                break
+                    else:
+                        break
     elif a == "2":
         for item in playerData['inv']:
             curItem = ITEMS[item]
@@ -486,7 +581,7 @@ def combat(enem,playerData):
                             if key.upper() == atk_sequence[current_attack_index]:
                                 combo += 1
                                 current_attack_index += 1
-                                dmg_dealt = round((combo * weapon["damage"]) / len(atk_sequence), 1)
+                                dmg_dealt = round((0.5 * combo * weapon["damage"]), 1)
                             else:
                                 combo = 0
 
@@ -782,6 +877,56 @@ def forge(playerData: dict, RARITIES: dict):
     
     console.print(Panel(weapon_text, border_style=primary_hex, expand=False))
     Prompt.ask("\nPress [bold]Enter[/bold] to continue")
+
+def relic(playerData):
+    tempinv = playerData
+    print("[bold yellow]Relics[/]")
+    print("Create powerful items to increase your luck!")
+    
+    playerItems = {}
+    playerItemslist = []
+    tocraft = []
+    tocraftname = []
+    def table_update():
+        itemTable = Table(title="Items")
+        itemTable.add_column("Index", style="dim")
+        itemTable.add_column("Name")
+        itemTable.add_column("Rank")
+        itemTable.add_column("Quantity")
+        i = 1
+        for item in tempinv["inv"]:
+            playerItems[ITEMS[item]["code"]] = tempinv["inv"][item]
+            playerItemslist.append(ITEMS[item]["code"])
+            itemTable.add_row(str(i),f"[#{RANK_COLORS[ITEMS[item]["rank"]]}]{ITEMS[item]["name"]}", ITEMS[item]["rank"], f"{tempinv["inv"][item]}")
+            i+=1
+        return itemTable, i
+
+    a = ""
+    while True:
+        itemTable,i = table_update()
+        clear()
+        print(itemTable)
+        print(Rule())
+        print("Choose 3 or more items to craft a relic!")
+        a = input("Enter your choice of items (by index): ")
+        if a.isnumeric and (1 <= int(a) <= i):
+            a = int(a)
+            tocraft.append(playerItemslist[a-1])
+            tocraftname.append(ITEMS[playerItemslist[a]]["name"])
+            tempinv["inv"][playerItemslist[a-1]] -=1
+        else:
+            print("[bold red]Invalid choice![/]")
+
+        if len(tocraft) == 3: 
+            break
+    c = input(f"Do you want to continue with your selection ({", ".join(tocraftname)}) (Y/N)")
+    if c.upper() == "Y":
+        pass
+    else:
+        tocraft = []
+        
+        
+
 
 def stat(playerData):
     clear()
