@@ -57,6 +57,21 @@ RELIC_OPPOSITES = {
     "organic": "polluted",
 }
 
+RELIC_PREFIXES = {
+
+}
+#TODO: relic prefix names
+#MARK: WIP
+
+KEY_STATS = {
+    "Z": {"power": 0.4, "precision": -0.2, "speed": 0.0, "prism": 0.0}, # Aggressive
+    "X": {"power": 0.0, "precision": 0.4, "speed": 0.0, "prism": 0.0},  # Precise
+    "C": {"power": -0.2, "precision": 0.0, "speed": 0.4, "prism": 0.0}, # Fast
+    "V": {"power": 0.0, "precision": 0.0, "speed": -0.2, "prism": 0.15}  # Resonating
+}
+
+POSITION_WEIGHTS = [1.2, 0.8, 0.5, 0.2]
+
 def clear():
     os.system("clear")
 
@@ -77,8 +92,12 @@ DEFAULT_SAVE = {
     "startDate": (datetime.fromtimestamp(time.time())).strftime("%d-%m-%Y"),
     "shardinv": {
     },
-    "inv": {},
-    "weapons": {},
+    "inv": {
+
+    },
+    "weapons": {
+
+    },
     "gear": {
 
     }
@@ -265,6 +284,7 @@ def inv():
                                     break
                             else:
                                 input("Press enter to go back: ")
+                                clear()
                                 break
                     else:
                         break
@@ -296,6 +316,7 @@ def inv():
                                     break
                             else:
                                 input("Press enter to go back: ")
+                                clear()
                                 break
                     else:
                         break
@@ -484,6 +505,7 @@ def combat(enem,playerData):
         player_status_effect = ""
         dodge_count = 0
         dodge_req = 0
+        atkseq = []
 
         def dashboards() -> Layout:
             layout = Layout()
@@ -513,15 +535,23 @@ def combat(enem,playerData):
             update_box(layout, "top", top_text, "white")
 
             if current_phase == "attack":
-
-                sequence_display = []
-                for i, key in enumerate(atk_sequence):
-                    if i < current_attack_index:
-                        sequence_display.append(f"[bold blue]{key}[/]")
-                    else:
-                        sequence_display.append(key)
+                sequence_display = atkseq
                 display_seq = " ".join(sequence_display)
-                left_text = f"Time Remaining: {time_remaining}\n\nAttack Sequence:\n{display_seq}"
+                atkstat = ""
+                for stat in final_stats:
+                    if stat == "prism":
+                        continue
+                    value = final_stats[stat] - 1
+                    tick_count = int(abs(value) // 0.25)
+                    pl = ""
+                    if value > 0:
+                        pl = "+" * tick_count
+                    elif value < 0:
+                        pl = "-" * tick_count
+                    atkstat += f"{stat.capitalize()}: {pl}\n"
+                prism_value = round(final_stats['prism'] * 100)
+                atkstat += f"Prism: {prism_value}%\n"
+                left_text = f"Time Remaining: {time_remaining}\n\nAttack Sequence:\n{display_seq}\n{atkstat}"
                 color = "#2cdb1f" if int(time_remaining * 10) % 2 == 0 else "#1f9100"
                 update_box(layout, "left", left_text, color)
 
@@ -558,38 +588,62 @@ def combat(enem,playerData):
         dodge_limit = ENEMIES[enem]['atktime']
 
         with Live(layout, refresh_per_second=30, screen=True) as live:
+            final_stats = { "power": 1.0, 
+                            "precision": 1.0, 
+                            "speed": 1.0, 
+                            "prism": 0.0
+                            }
+            prism_gauge = 0
+            prismattack = False
             while combat_running:
+                wepdmg = weapon["damage"] * 0.7
                 if player_health <= 0 or enemy_health <= 0:
                     combat_running = False
                     break
                 if current_phase == "attack":
+                    
+                    atkseq = []
                     if change:
-                        atk_sequence = [random.choice(["Z", "X", "C", "V"]) for _ in range(7)]
                         current_attack_index = 0
-                        change = False
                     start_time = time.time()
-                    combo = 0
                     dmg_dealt = 0
                     while True:
                         time_remaining = round((time_limit - (time.time() - start_time)), 1)
-                        if time_remaining <= 0 or current_attack_index >= len(atk_sequence):
+                        if time_remaining <= 0 or current_attack_index >= 4:
                             current_phase = "defence"
+                            prismattack = True
                             break
 
                         if key_seq:
                             key = key_seq.pop(0)
-                            if key.upper() == atk_sequence[current_attack_index]:
-                                combo += 1
+                            if key.upper() in ["Z", "X", "C", "V"]:
+                                upper_key = key.upper()
+                                weight = POSITION_WEIGHTS[current_attack_index]
+                                key_data = KEY_STATS.get(upper_key, {})
+                                for stat in final_stats:
+                                    final_stats[stat] += key_data.get(stat, 0) * weight
+                                atkseq.append(upper_key)
                                 current_attack_index += 1
-                                dmg_dealt = round((0.5 * combo * weapon["damage"]), 1)
-                            else:
-                                combo = 0
+                                variation = random.randint(-15,15) / 100
+                                dmg_dealt = round((weapon["damage"]) * final_stats["power"] * ((1+(final_stats["precision"])) / 2) * (1+variation), 1)
 
                         panel_manager()
                         live.update(layout)
                         time.sleep(PAUSE_MS)
                     enemy_health = max(0, round(enemy_health - dmg_dealt,1))
+                    final_stats = { "power": 1.0, "precision": 1.0, "speed": 1.0, "prism": 0.0 }
                     current_phase = "defence"
+                if prismattack: 
+                    prismattack = False
+                    prism_gauge = 0
+                    chosenprism = ""
+                    while True:
+                        chosenprism = random.choice(equippedprisms)
+                        if not usedprisms[chosenprism]["used"] and not usedprisms[chosenprism]["broken"]:
+                            break
+                    usedprisms[chosenprism]["used"] = True
+
+
                 elif current_phase == "defence":
                     attack = random.choice(list(enemyData["attack"].keys()))
                     start_time = time.time()
@@ -919,13 +973,41 @@ def relic(playerData):
 
         if len(tocraft) == 3: 
             break
-    c = input(f"Do you want to continue with your selection ({", ".join(tocraftname)}) (Y/N)")
+    c = input(f"Do you want to continue with your selection ({', '.join(tocraftname)}) (Y/N)")
     if c.upper() == "Y":
-        pass
+        selected_traits = {}
+        conflict_found = False
+        conflict_items = None
+
+        for item in tocraft:
+            for trait in ITEMS[item].get("traits", []):
+                opposite = RELIC_OPPOSITES.get(trait)
+                if opposite and opposite in selected_traits:
+                    conflict_found = True
+                    conflict_items = (item, selected_traits[opposite])
+                    break
+
+                reverse_opposite = next((base for base, opp in RELIC_OPPOSITES.items() if opp == trait), None)
+                if reverse_opposite and reverse_opposite in selected_traits:
+                    conflict_found = True
+                    conflict_items = (item, selected_traits[reverse_opposite])
+                    break
+
+                selected_traits[trait] = item
+            if conflict_found:
+                break
+
+        if conflict_found:
+            console.print(f"[red]Relic crafting cancelled: item conflict detected between {conflict_items[0]} and {conflict_items[1]}.[/red]")
+            input("Press enter to continue: ")
+            clear()
+            return
+        print("[bold green]Crafting relic...[/]")
+        playerData = tempinv
+        #MARK: WIP Relics
+        #TODO: relics
     else:
         tocraft = []
-        
-        
 
 
 def stat(playerData):

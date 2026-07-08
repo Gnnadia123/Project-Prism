@@ -3,17 +3,18 @@
     "rebirth": 1,
     "talons": 399,
     "invcap": 80,
-    "rolls": 58,
+    "rolls": 78,
     "hp": 100,
     "startDate": "19-05-2026",
     "shardinv": {
-        "standard": 10,
+        "standard": 17,
+        "uncommon": 6,
         "rare": 3,
-        "uncommon": 2
+        "firebase": 1
     },
     "inv": {
-        "mon-essence1": 6,
-        "life-essence1": 2
+        "mon-essence1": 8,
+        "life-essence1": 4
     },
     "weapons": {
         "wep_1778564524_635": {
